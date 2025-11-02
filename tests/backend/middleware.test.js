@@ -25,8 +25,13 @@ describe('Middleware Tests', () => {
 
   beforeAll(async () => {
     try {
-      // Load student's app
+      // Load student's app (check grading-folder first, then root)
       const possiblePaths = [
+        path.join(process.cwd(), 'grading-folder', 'backend', 'server.js'),
+        path.join(process.cwd(), 'grading-folder', 'backend', 'app.js'),
+        path.join(process.cwd(), 'grading-folder', 'backend', 'index.js'),
+        path.join(process.cwd(), 'grading-folder', 'server', 'server.js'),
+        path.join(process.cwd(), 'grading-folder', 'server', 'index.js'),
         path.join(process.cwd(), 'server', 'index.js'),
         path.join(process.cwd(), 'server', 'server.js'),
         path.join(process.cwd(), 'backend', 'index.js'),
@@ -313,7 +318,10 @@ describe('Middleware Tests', () => {
       try {
         // Check if common logging packages are used
         const fs = require('fs');
-        const packageJsonPath = path.join(process.cwd(), 'package.json');
+        let packageJsonPath = path.join(process.cwd(), 'grading-folder', 'backend', 'package.json');
+        if (!fs.existsSync(packageJsonPath)) {
+          packageJsonPath = path.join(process.cwd(), 'package.json');
+        }
         
         if (fs.existsSync(packageJsonPath)) {
           const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
@@ -350,7 +358,10 @@ describe('Middleware Tests', () => {
 
       try {
         const fs = require('fs');
-        const packageJsonPath = path.join(process.cwd(), 'package.json');
+        let packageJsonPath = path.join(process.cwd(), 'grading-folder', 'backend', 'package.json');
+        if (!fs.existsSync(packageJsonPath)) {
+          packageJsonPath = path.join(process.cwd(), 'package.json');
+        }
         
         if (fs.existsSync(packageJsonPath)) {
           const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
@@ -412,6 +423,8 @@ describe('Middleware Tests', () => {
       try {
         const fs = require('fs');
         const middlewarePaths = [
+          path.join(process.cwd(), 'grading-folder', 'backend', 'middleware'),
+          path.join(process.cwd(), 'grading-folder', 'server', 'middleware'),
           path.join(process.cwd(), 'server', 'middleware'),
           path.join(process.cwd(), 'backend', 'middleware'),
           path.join(process.cwd(), 'middleware')

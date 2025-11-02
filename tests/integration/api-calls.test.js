@@ -33,8 +33,13 @@ describe('Frontend-Backend API Integration Tests', () => {
 
   beforeAll(async () => {
     try {
-      // Load student's app
+      // Load student's app (check grading-folder first, then root)
       const possiblePaths = [
+        path.join(process.cwd(), 'grading-folder', 'backend', 'server.js'),
+        path.join(process.cwd(), 'grading-folder', 'backend', 'app.js'),
+        path.join(process.cwd(), 'grading-folder', 'backend', 'index.js'),
+        path.join(process.cwd(), 'grading-folder', 'server', 'server.js'),
+        path.join(process.cwd(), 'grading-folder', 'server', 'index.js'),
         path.join(process.cwd(), 'server', 'index.js'),
         path.join(process.cwd(), 'server', 'server.js'),
         path.join(process.cwd(), 'backend', 'index.js'),

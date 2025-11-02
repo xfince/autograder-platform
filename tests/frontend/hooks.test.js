@@ -420,7 +420,10 @@ describe('React Hooks & State Management Tests', () => {
   describe('State Management Libraries', () => {
     test('Redux/Zustand/other state library usage (if applicable)', () => {
       try {
-        const packageJsonPath = path.join(process.cwd(), 'package.json');
+        let packageJsonPath = path.join(process.cwd(), 'grading-folder', 'frontend', 'package.json');
+        if (!fs.existsSync(packageJsonPath)) {
+          packageJsonPath = path.join(process.cwd(), 'package.json');
+        }
         let usesStateLibrary = false;
         let stateLibrary = null;
 

@@ -25,8 +25,13 @@ describe('Error Handling Tests', () => {
 
   beforeAll(async () => {
     try {
-      // Load student's app
+      // Load student's app (check grading-folder first, then root)
       const possiblePaths = [
+        path.join(process.cwd(), 'grading-folder', 'backend', 'server.js'),
+        path.join(process.cwd(), 'grading-folder', 'backend', 'app.js'),
+        path.join(process.cwd(), 'grading-folder', 'backend', 'index.js'),
+        path.join(process.cwd(), 'grading-folder', 'server', 'server.js'),
+        path.join(process.cwd(), 'grading-folder', 'server', 'index.js'),
         path.join(process.cwd(), 'server', 'index.js'),
         path.join(process.cwd(), 'server', 'server.js'),
         path.join(process.cwd(), 'backend', 'index.js'),
@@ -476,7 +481,8 @@ describe('Error Handling Tests', () => {
       // This is hard to test directly, but we can check if logging packages exist
       try {
         const fs = require('fs');
-        const packageJsonPath = path.join(process.cwd(), 'package.json');
+        const packageJsonPath = path.join(process.cwd(), 'grading-folder', 'backend', 'package.json') ||
+                                path.join(process.cwd(), 'package.json');
         
         if (fs.existsSync(packageJsonPath)) {
           const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));

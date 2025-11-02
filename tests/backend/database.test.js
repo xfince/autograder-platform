@@ -87,9 +87,11 @@ describe('Database Integration Tests', () => {
 
     beforeAll(async () => {
       try {
-        // Try to find and load student models
+        // Try to find and load student models (check grading-folder first, then root)
         const fs = require('fs');
         const modelPaths = [
+          path.join(process.cwd(), 'grading-folder', 'backend', 'models'),
+          path.join(process.cwd(), 'grading-folder', 'server', 'models'),
           path.join(process.cwd(), 'server', 'models'),
           path.join(process.cwd(), 'backend', 'models'),
           path.join(process.cwd(), 'models')

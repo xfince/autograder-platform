@@ -26,8 +26,14 @@ describe('Backend API Endpoints Tests', () => {
   // Setup: Try to load the student's app
   beforeAll(async () => {
     try {
-      // Try common app entry points
+      // Try common app entry points (check grading-folder first, then root)
       const possiblePaths = [
+        path.join(process.cwd(), 'grading-folder', 'backend', 'server.js'),
+        path.join(process.cwd(), 'grading-folder', 'backend', 'app.js'),
+        path.join(process.cwd(), 'grading-folder', 'backend', 'index.js'),
+        path.join(process.cwd(), 'grading-folder', 'server', 'server.js'),
+        path.join(process.cwd(), 'grading-folder', 'server', 'app.js'),
+        path.join(process.cwd(), 'grading-folder', 'server', 'index.js'),
         path.join(process.cwd(), 'server', 'index.js'),
         path.join(process.cwd(), 'server', 'server.js'),
         path.join(process.cwd(), 'server', 'app.js'),

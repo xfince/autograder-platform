@@ -42,7 +42,10 @@ describe('Next.js Routing Tests', () => {
   describe('Next.js Project Structure', () => {
     test('Project uses Next.js framework', () => {
       try {
-        const packageJsonPath = path.join(process.cwd(), 'package.json');
+        let packageJsonPath = path.join(process.cwd(), 'grading-folder', 'frontend', 'package.json');
+        if (!fs.existsSync(packageJsonPath)) {
+          packageJsonPath = path.join(process.cwd(), 'package.json');
+        }
         let usesNext = false;
 
         if (fs.existsSync(packageJsonPath)) {
