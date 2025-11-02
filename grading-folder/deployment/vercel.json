@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "name": "taskflow-frontend",
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "@taskflow-api-url",
+    "NEXT_PUBLIC_SOCKET_URL": "@taskflow-socket-url"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_API_URL": "@taskflow-api-url",
+      "NEXT_PUBLIC_SOCKET_URL": "@taskflow-socket-url"
+    }
+  }
+}
