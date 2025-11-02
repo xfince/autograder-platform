@@ -232,7 +232,7 @@ jobs:
           MONGODB_URI: mongodb://localhost:27017/test_db
           JWT_SECRET: test_secret_key_for_grading_123456
         run: |
-          echo "🧪 Running unit tests..."
+          echo "🧪 Running unit tests..." >&2
           node grading-scripts/run-unit-tests.js > unit-test-results.json
           
           # Check if tests ran successfully
@@ -261,7 +261,7 @@ jobs:
         id: git_analysis
         if: steps.validate.outputs.validation_failed != 'true'
         run: |
-          echo "📜 Analyzing git commit history..."
+          echo "📜 Analyzing git commit history..." >&2
           node grading-scripts/analyze-git-history.js > git-analysis.json
           
           echo "## 📜 Git History Analysis" >> $GITHUB_STEP_SUMMARY
@@ -284,20 +284,20 @@ jobs:
         id: code_summary
         if: steps.validate.outputs.validation_failed != 'true'
         run: |
-          echo "📝 Generating code summaries..."
+          echo "📝 Generating code summaries..." >&2
           node grading-scripts/code-summarizer.js > code-summaries.json
           
           # Check file size and validity
           if [ -f "code-summaries.json" ] && jq empty code-summaries.json 2>/dev/null; then
             summary_size=$(wc -c < code-summaries.json)
-            echo "📊 Code summary size: $summary_size bytes"
-            echo "✅ Code summary generated successfully"
+            echo "📊 Code summary size: $summary_size bytes" >&2
+            echo "✅ Code summary generated successfully" >&2
             echo "code_summary_completed=true" >> $GITHUB_OUTPUT
           else
-            echo "❌ Code summary generation failed or produced invalid JSON"
+            echo "❌ Code summary generation failed or produced invalid JSON" >&2
             if [ -f "code-summaries.json" ]; then
-              echo "First 500 chars of output:"
-              head -c 500 code-summaries.json
+              echo "First 500 chars of output:" >&2
+              head -c 500 code-summaries.json >&2
             fi
             echo "code_summary_completed=false" >> $GITHUB_OUTPUT
           fi
@@ -311,11 +311,11 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          echo "🤖 Running GPT-4o evaluation..."
+          echo "🤖 Running GPT-4o evaluation..." >&2
           
           # Check if API key exists
           if [ -z "$OPENAI_API_KEY" ]; then
-            echo "❌ ERROR: OPENAI_API_KEY not set in repository secrets"
+            echo "❌ ERROR: OPENAI_API_KEY not set in repository secrets" >&2
             echo "gpt_evaluation_failed=true" >> $GITHUB_OUTPUT
             exit 0
           fi
@@ -327,7 +327,7 @@ jobs:
           if [ $EXIT_CODE -eq 0 ] && [ -f "gpt-evaluation.json" ]; then
             # Verify JSON is valid
             if jq empty gpt-evaluation.json 2>/dev/null; then
-              echo "✅ GPT evaluation completed"
+              echo "✅ GPT evaluation completed" >&2
               echo "gpt_evaluation_completed=true" >> $GITHUB_OUTPUT
               
               # Add summary
@@ -338,13 +338,13 @@ jobs:
               api_calls=$(jq '.metadata.total_api_calls // 0' gpt-evaluation.json)
               echo "**API Calls Made:** $api_calls" >> $GITHUB_STEP_SUMMARY
             else
-              echo "❌ GPT evaluation produced invalid JSON"
-              echo "First 500 chars of output:"
-              head -c 500 gpt-evaluation.json
+              echo "❌ GPT evaluation produced invalid JSON" >&2
+              echo "First 500 chars of output:" >&2
+              head -c 500 gpt-evaluation.json >&2
               echo "gpt_evaluation_completed=false" >> $GITHUB_OUTPUT
             fi
           else
-            echo "❌ GPT evaluation failed with exit code $EXIT_CODE"
+            echo "❌ GPT evaluation failed with exit code $EXIT_CODE" >&2
             echo "gpt_evaluation_completed=false" >> $GITHUB_OUTPUT
           fi
       
