@@ -1,11 +1,13 @@
 {
-  "name": "grading-scripts",
+  "name": "student-grading-system",
   "version": "1.0.0",
   "description": "Automated grading scripts for full-stack projects",
   "main": "generate-report.js",
   "scripts": {
     "test": "jest",
-    "grade": "node generate-report.js"
+    "grade": "node generate-report.js",
+    "build": "cd grading-folder/frontend && npm install && npm run build",
+    "install:all": "npm install && cd grading-scripts && npm install && cd ../grading-folder/frontend && npm install && cd ../backend && npm install"
   },
   "dependencies": {
     "openai": "^4.20.0",
