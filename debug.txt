@@ -1,0 +1,34 @@
+2025-11-10T14:00:16.7367322Z ##[group]Run echo "🧪 Running unit tests..." >&2
+2025-11-10T14:00:16.7367693Z [36;1mecho "🧪 Running unit tests..." >&2[0m
+2025-11-10T14:00:16.7368064Z [36;1mnode grading-scripts/run-unit-tests.js > unit-test-results.json[0m
+2025-11-10T14:00:16.7368404Z [36;1m[0m
+2025-11-10T14:00:16.7368594Z [36;1m# Check if tests ran successfully[0m
+2025-11-10T14:00:16.7368845Z [36;1mif [ $? -eq 0 ]; then[0m
+2025-11-10T14:00:16.7369119Z [36;1m  echo "unit_tests_completed=true" >> $GITHUB_OUTPUT[0m
+2025-11-10T14:00:16.7369396Z [36;1melse[0m
+2025-11-10T14:00:16.7369622Z [36;1m  echo "unit_tests_completed=false" >> $GITHUB_OUTPUT[0m
+2025-11-10T14:00:16.7370123Z [36;1mfi[0m
+2025-11-10T14:00:16.7370318Z [36;1m[0m
+2025-11-10T14:00:16.7370486Z [36;1m# Display summary[0m
+2025-11-10T14:00:16.7370736Z [36;1mif [ -f "unit-test-results.json" ]; then[0m
+2025-11-10T14:00:16.7371072Z [36;1m  echo "## 🧪 Unit Test Results" >> $GITHUB_STEP_SUMMARY[0m
+2025-11-10T14:00:16.7371361Z [36;1m  node -e "[0m
+2025-11-10T14:00:16.7371666Z [36;1m    const results = require('./unit-test-results.json');[0m
+2025-11-10T14:00:16.7372008Z [36;1m    console.log('**Total Tests:** ' + results.total);[0m
+2025-11-10T14:00:16.7372344Z [36;1m    console.log('**Passed:** ' + results.passed + ' ✅');[0m
+2025-11-10T14:00:16.7372667Z [36;1m    console.log('**Failed:** ' + results.failed + ' ❌');[0m
+2025-11-10T14:00:16.7373027Z [36;1m    console.log('**Success Rate:** ' + results.successRate + '%');[0m
+2025-11-10T14:00:16.7373355Z [36;1m  " >> $GITHUB_STEP_SUMMARY[0m
+2025-11-10T14:00:16.7373569Z [36;1mfi[0m
+2025-11-10T14:00:16.7405542Z shell: /usr/bin/bash -e {0}
+2025-11-10T14:00:16.7405773Z env:
+2025-11-10T14:00:16.7405949Z   NODE_ENV: test
+2025-11-10T14:00:16.7406180Z   MONGODB_URI: mongodb://localhost:27017/test_db
+2025-11-10T14:00:16.7406483Z   JWT_SECRET: test_secret_key_for_grading_123456
+2025-11-10T14:00:16.7406724Z ##[endgroup]
+2025-11-10T14:00:16.7458249Z 🧪 Running unit tests...
+2025-11-10T14:00:16.7692916Z 🧪 Running Unit Tests...
+2025-11-10T14:00:16.7693257Z 
+2025-11-10T14:00:16.7697184Z 
+2025-11-10T14:00:16.7697596Z 📋 Running: API Endpoints
+2025-11-10T14:05:53.3977817Z ##[error]The operation was canceled.
