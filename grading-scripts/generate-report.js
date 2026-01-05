@@ -1,6 +1,6 @@
 /**
  * grading-scripts/generate-report.js
- * 
+ *
  * Generates final comprehensive grading report
  */
 
@@ -20,7 +20,7 @@ function loadJSON(filename) {
 
 function calculateLetterGrade(totalScore, maxScore) {
   const percentage = (totalScore / maxScore) * 100;
-  
+
   if (percentage >= 90) return 'A';
   if (percentage >= 85) return 'A-';
   if (percentage >= 80) return 'B+';
@@ -52,10 +52,10 @@ function generateReport() {
   const report = {
     timestamp: new Date().toISOString(),
     student_repository: process.env.GITHUB_REPOSITORY || 'Unknown',
-    grading_date: new Date().toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    grading_date: new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     }),
     scores: {},
     total_score: 0,
@@ -64,7 +64,7 @@ function generateReport() {
     letter_grade: '',
     build_status: 'unknown',
     test_execution: {},
-    criteria_breakdown: []
+    criteria_breakdown: [],
   };
 
   // Determine build status
@@ -75,7 +75,7 @@ function generateReport() {
   }
 
   // Process each criterion
-  rubric.criteria.forEach(criterion => {
+  rubric.criteria.forEach((criterion) => {
     const criterionResult = {
       id: criterion.id,
       title: criterion.title,
@@ -87,7 +87,7 @@ function generateReport() {
       strengths: [],
       weaknesses: [],
       improvements: [],
-      files_analyzed: []
+      files_analyzed: [],
     };
 
     // Get score based on evaluation method
@@ -99,16 +99,16 @@ function generateReport() {
         criterionResult.unit_test_results = {
           total: unitScore.total_tests,
           passed: unitScore.passed,
-          failed: unitScore.failed
+          failed: unitScore.failed,
         };
-        
+
         // Determine level
         const percentage = (criterionResult.score / criterion.max_points) * 100;
         if (percentage >= 90) criterionResult.level_achieved = 'Excellent';
         else if (percentage >= 75) criterionResult.level_achieved = 'Good';
         else if (percentage >= 50) criterionResult.level_achieved = 'Fair';
         else criterionResult.level_achieved = 'Poor';
-        
+
         criterionResult.justification = `Unit tests: ${unitScore.passed}/${unitScore.total_tests} passed`;
       }
     } else if (criterion.evaluation_method === 'gpt_semantic') {
@@ -134,12 +134,12 @@ function generateReport() {
         criterionResult.weaknesses = gptResult.weaknesses;
         criterionResult.improvements = gptResult.improvements;
         criterionResult.files_analyzed = gptResult.files_analyzed;
-        
+
         if (gptResult.hybrid_calculation) {
           criterionResult.hybrid_breakdown = gptResult.hybrid_calculation;
           criterionResult.unit_test_results = {
             score: gptResult.hybrid_calculation.unit_test_score,
-            weight: gptResult.hybrid_calculation.unit_test_weight
+            weight: gptResult.hybrid_calculation.unit_test_weight,
           };
         }
       }
@@ -154,7 +154,7 @@ function generateReport() {
         total_commits: gitAnalysis.total_commits,
         commit_frequency: gitAnalysis.commit_frequency,
         meaningful_messages: gitAnalysis.commit_message_quality?.meaningful,
-        vague_messages: gitAnalysis.commit_message_quality?.vague
+        vague_messages: gitAnalysis.commit_message_quality?.vague,
       };
     }
 
@@ -179,25 +179,27 @@ function generateReport() {
       total_tests: unitTests.total_tests,
       passed: unitTests.passed,
       failed: unitTests.failed,
-      success_rate: unitTests.success_rate
+      success_rate: unitTests.success_rate,
     };
   }
 
   // Generate markdown report
   const markdown = generateMarkdownReport(report, rubric, gitAnalysis, codeSummaries);
-  
+
   // Write report
   fs.writeFileSync('GRADING_REPORT.md', markdown);
   console.log('✅ Report written to GRADING_REPORT.md\n');
 
   // Also output JSON
   fs.writeFileSync('grading-report.json', JSON.stringify(report, null, 2));
-  
+
   // Print summary
   console.log('='.repeat(60));
   console.log('📊 FINAL GRADING SUMMARY');
   console.log('='.repeat(60));
-  console.log(`Total Score: ${report.total_score.toFixed(2)}/${report.max_score} (${report.percentage}%)`);
+  console.log(
+    `Total Score: ${report.total_score.toFixed(2)}/${report.max_score} (${report.percentage}%)`,
+  );
   console.log(`Letter Grade: ${report.letter_grade}`);
   console.log(`Build Status: ${report.build_status}`);
   console.log('='.repeat(60) + '\n');
@@ -219,21 +221,27 @@ function generateMarkdownReport(report, rubric, gitAnalysis, codeSummaries) {
 
   // Executive Summary
   md += `## Executive Summary\n\n`;
-  
-  const excellentAreas = report.criteria_breakdown.filter(c => c.score >= 3.5);
-  const goodAreas = report.criteria_breakdown.filter(c => c.score >= 3.0 && c.score < 3.5);
-  const needsWork = report.criteria_breakdown.filter(c => c.score < 3.0);
+
+  const excellentAreas = report.criteria_breakdown.filter((c) => c.score >= 3.5);
+  const goodAreas = report.criteria_breakdown.filter((c) => c.score >= 3.0 && c.score < 3.5);
+  const needsWork = report.criteria_breakdown.filter((c) => c.score < 3.0);
 
   if (excellentAreas.length > 0) {
     md += `Your project demonstrates ${excellentAreas.length > 3 ? 'strong' : 'good'} technical implementation`;
     if (excellentAreas.length > 0) {
-      md += ` with particularly excellent work in ${excellentAreas.slice(0, 3).map(a => a.title.toLowerCase()).join(', ')}`;
+      md += ` with particularly excellent work in ${excellentAreas
+        .slice(0, 3)
+        .map((a) => a.title.toLowerCase())
+        .join(', ')}`;
     }
     md += `. `;
   }
 
   if (needsWork.length > 0) {
-    md += `Areas for improvement include ${needsWork.slice(0, 3).map(a => a.title.toLowerCase()).join(', ')}.`;
+    md += `Areas for improvement include ${needsWork
+      .slice(0, 3)
+      .map((a) => a.title.toLowerCase())
+      .join(', ')}.`;
   }
 
   md += `\n\n---\n\n`;
@@ -292,28 +300,28 @@ function generateMarkdownReport(report, rubric, gitAnalysis, codeSummaries) {
     // Strengths
     if (criterion.strengths && criterion.strengths.length > 0) {
       md += `**Strengths**:\n`;
-      criterion.strengths.forEach(s => md += `- ${s}\n`);
+      criterion.strengths.forEach((s) => (md += `- ${s}\n`));
       md += `\n`;
     }
 
     // Weaknesses
     if (criterion.weaknesses && criterion.weaknesses.length > 0) {
       md += `**Weaknesses**:\n`;
-      criterion.weaknesses.forEach(w => md += `- ${w}\n`);
+      criterion.weaknesses.forEach((w) => (md += `- ${w}\n`));
       md += `\n`;
     }
 
     // Improvements
     if (criterion.improvements && criterion.improvements.length > 0) {
       md += `**Improvements**:\n`;
-      criterion.improvements.forEach(i => md += `- ${i}\n`);
+      criterion.improvements.forEach((i) => (md += `- ${i}\n`));
       md += `\n`;
     }
 
     // Files analyzed
     if (criterion.files_analyzed && criterion.files_analyzed.length > 0) {
       md += `**Files Analyzed**:\n`;
-      criterion.files_analyzed.forEach(f => md += `- \`${f}\`\n`);
+      criterion.files_analyzed.forEach((f) => (md += `- \`${f}\`\n`));
       md += `\n`;
     }
 
@@ -340,20 +348,20 @@ function generateMarkdownReport(report, rubric, gitAnalysis, codeSummaries) {
   md += `## 🎯 Overall Assessment\n\n`;
 
   md += `**Excellent Areas** (3.5-4.0):\n`;
-  excellentAreas.forEach(area => {
+  excellentAreas.forEach((area) => {
     md += `- ${area.title} (${area.score.toFixed(1)})\n`;
   });
   md += `\n`;
 
   md += `**Good Areas** (3.0-3.4):\n`;
-  goodAreas.forEach(area => {
+  goodAreas.forEach((area) => {
     md += `- ${area.title} (${area.score.toFixed(1)})\n`;
   });
   md += `\n`;
 
   if (needsWork.length > 0) {
     md += `**Areas Needing Improvement** (<3.0):\n`;
-    needsWork.forEach(area => {
+    needsWork.forEach((area) => {
       md += `- ${area.title} (${area.score.toFixed(1)})\n`;
     });
     md += `\n`;
@@ -362,10 +370,10 @@ function generateMarkdownReport(report, rubric, gitAnalysis, codeSummaries) {
   // Top priority improvements
   md += `**Top Priority Improvements**:\n`;
   const allImprovements = report.criteria_breakdown
-    .flatMap(c => c.improvements || [])
+    .flatMap((c) => c.improvements || [])
     .filter((v, i, a) => a.indexOf(v) === i) // Remove duplicates
     .slice(0, 5);
-  
+
   allImprovements.forEach((imp, i) => {
     md += `${i + 1}. ${imp}\n`;
   });
@@ -394,9 +402,9 @@ function generateMarkdownReport(report, rubric, gitAnalysis, codeSummaries) {
 
 function formatEvaluationMethod(method) {
   const methods = {
-    'unit_test': 'Unit Testing',
-    'gpt_semantic': 'GPT Semantic Analysis',
-    'hybrid': 'Hybrid (Unit Tests + GPT Analysis)'
+    unit_test: 'Unit Testing',
+    gpt_semantic: 'GPT Semantic Analysis',
+    hybrid: 'Hybrid (Unit Tests + GPT Analysis)',
   };
   return methods[method] || method;
 }

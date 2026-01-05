@@ -1,6 +1,6 @@
 /**
  * tests/integration/api-calls.test.js
- * 
+ *
  * Tests for frontend-backend integration via API calls
  * Evaluates: Criterion 6 (Front-End/Back-End Integration)
  */
@@ -20,13 +20,13 @@ describe('Frontend-Backend API Integration Tests', () => {
     total_tests: 0,
     passed: 0,
     failed: 0,
-    details: []
+    details: [],
   };
 
   let testUser = {
     email: 'integration@example.com',
     password: 'IntegrationTest123!',
-    name: 'Integration Test User'
+    name: 'Integration Test User',
   };
   let authToken;
   let userId;
@@ -43,7 +43,7 @@ describe('Frontend-Backend API Integration Tests', () => {
         path.join(process.cwd(), 'server', 'index.js'),
         path.join(process.cwd(), 'server', 'server.js'),
         path.join(process.cwd(), 'backend', 'index.js'),
-        path.join(process.cwd(), 'backend', 'server.js')
+        path.join(process.cwd(), 'backend', 'server.js'),
       ];
 
       for (const appPath of possiblePaths) {
@@ -94,7 +94,7 @@ describe('Frontend-Backend API Integration Tests', () => {
       if (server && server.close) {
         await new Promise((resolve) => server.close(resolve));
       }
-      
+
       if (mongoose.connection.readyState === 1) {
         await mongoose.connection.db.dropDatabase();
         await mongoose.connection.close();
@@ -116,7 +116,7 @@ describe('Frontend-Backend API Integration Tests', () => {
     testResults.details.push({
       test: testName,
       passed,
-      error: error ? error.message : null
+      error: error ? error.message : null,
     });
   };
 
@@ -160,7 +160,7 @@ describe('Frontend-Backend API Integration Tests', () => {
       try {
         const endpoints = [
           { path: '/api/posts', data: { title: 'Test Post', content: 'Test content' } },
-          { path: '/api/items', data: { name: 'Test Item', description: 'Test desc' } }
+          { path: '/api/items', data: { name: 'Test Item', description: 'Test desc' } },
         ];
 
         let canMakePost = false;
@@ -200,7 +200,7 @@ describe('Frontend-Backend API Integration Tests', () => {
         const testId = userId || '507f1f77bcf86cd799439011';
         const endpoints = [
           { path: `/api/users/${testId}`, data: { name: 'Updated Name' } },
-          { path: `/api/posts/${testId}`, data: { title: 'Updated Title' } }
+          { path: `/api/posts/${testId}`, data: { title: 'Updated Title' } },
         ];
 
         let canUpdate = false;
@@ -276,7 +276,7 @@ describe('Frontend-Backend API Integration Tests', () => {
         const testData = {
           title: 'Integration Test Post',
           content: 'This is a test of data flow',
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
 
         const response = await request(app)
@@ -293,8 +293,9 @@ describe('Frontend-Backend API Integration Tests', () => {
 
           if (getResponse.status === 200) {
             const posts = getResponse.body;
-            const foundPost = Array.isArray(posts) ? 
-              posts.find(p => p.title === testData.title) : null;
+            const foundPost = Array.isArray(posts)
+              ? posts.find((p) => p.title === testData.title)
+              : null;
 
             expect(foundPost).toBeTruthy();
             recordTest('Data flow to backend', true);
@@ -324,7 +325,7 @@ describe('Frontend-Backend API Integration Tests', () => {
         // Check response has proper structure
         expect(response.body).toBeDefined();
         expect(response.headers['content-type']).toMatch(/json/);
-        
+
         recordTest('Data flow from backend', true);
       } catch (error) {
         recordTest('Data flow from backend', false, error);
@@ -405,7 +406,7 @@ describe('Frontend-Backend API Integration Tests', () => {
         for (const endpoint of protectedEndpoints) {
           try {
             const response = await request(app).get(endpoint);
-            
+
             if (response.status === 401 || response.status === 403) {
               properlyRejects = true;
               break;
@@ -439,9 +440,9 @@ describe('Frontend-Backend API Integration Tests', () => {
 
         if (response.status >= 400 && response.status < 500) {
           // Check if error message exists
-          const hasErrorMessage = response.body && 
-            (response.body.error || response.body.message || response.body.errors);
-          
+          const hasErrorMessage =
+            response.body && (response.body.error || response.body.message || response.body.errors);
+
           expect(hasErrorMessage).toBe(true);
           recordTest('Validation error communication', true);
         } else {
@@ -466,7 +467,7 @@ describe('Frontend-Backend API Integration Tests', () => {
         // Should return 404 with structured response
         expect(response.status).toBe(404);
         expect(response.body).toBeDefined();
-        
+
         recordTest('Network error handling', true);
       } catch (error) {
         recordTest('Network error handling', false, error);
@@ -487,7 +488,7 @@ describe('Frontend-Backend API Integration Tests', () => {
         // Should return 4xx error, not 5xx
         expect(response.status).toBeGreaterThanOrEqual(400);
         expect(response.status).toBeLessThan(500);
-        
+
         recordTest('Server error status codes', true);
       } catch (error) {
         recordTest('Server error status codes', false, error);
@@ -509,7 +510,7 @@ describe('Frontend-Backend API Integration Tests', () => {
           .set('Origin', 'http://localhost:3000');
 
         const hasCORS = response.headers['access-control-allow-origin'] !== undefined;
-        
+
         expect(hasCORS).toBe(true);
         recordTest('CORS headers', true);
       } catch (error) {
@@ -547,7 +548,7 @@ describe('Frontend-Backend API Integration Tests', () => {
         const newUser = {
           email: `flow${Date.now()}@example.com`,
           password: 'FlowTest123!',
-          name: 'Flow Test User'
+          name: 'Flow Test User',
         };
 
         // Register
@@ -558,7 +559,7 @@ describe('Frontend-Backend API Integration Tests', () => {
 
         if (registerResponse.status === 200 || registerResponse.status === 201) {
           const token = registerResponse.body?.token || registerResponse.body?.accessToken;
-          
+
           if (token) {
             // Use token to access protected route
             const profileResponse = await request(app)

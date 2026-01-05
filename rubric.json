@@ -232,9 +232,7 @@
       "evaluation_method": "unit_test",
       "unit_test_weight": 1.0,
       "gpt_weight": 0,
-      "test_files": [
-        "tests/git/commit-history.test.js"
-      ],
+      "test_files": ["tests/git/commit-history.test.js"],
       "files_to_analyze": [],
       "git_analysis": true,
       "gpt_instructions": "This criterion is evaluated through git command analysis.",
@@ -280,10 +278,7 @@
       "unit_test_weight": 0,
       "gpt_weight": 1.0,
       "test_files": [],
-      "files_to_analyze": [
-        "grading-folder/frontend/**/*",
-        "grading-folder/backend/**/*"
-      ],
+      "files_to_analyze": ["grading-folder/frontend/**/*", "grading-folder/backend/**/*"],
       "gpt_instructions": "Identify and evaluate advanced features beyond basic CRUD operations. Look for: real-time updates (WebSockets, Socket.io), file upload functionality, third-party API integrations, payment processing, email notifications, search functionality, data visualization, advanced state management, caching strategies, or other sophisticated features. Assess the complexity and implementation quality of these features. Consider if features add genuine value or are just 'feature bloat'.",
       "levels": {
         "Excellent": "Goes beyond basic requirements with advanced features like real-time updates (WebSockets), file uploads, third-party API integration, payment processing, email notifications, or other sophisticated functionality.",
@@ -305,10 +300,7 @@
         "tests/security/sql-injection.test.js",
         "tests/security/sensitive-data.test.js"
       ],
-      "files_to_analyze": [
-        "grading-folder/backend/**/*.js",
-        "grading-folder/frontend/**/*.js"
-      ],
+      "files_to_analyze": ["grading-folder/backend/**/*.js", "grading-folder/frontend/**/*.js"],
       "gpt_instructions": "Conduct a security review of the codebase. Check for input validation and sanitization, protection against SQL/NoSQL injection, XSS protection measures, CORS configuration, proper use of environment variables for sensitive data, secure HTTP headers, and avoidance of sensitive data exposure in client-side code. Look for security packages usage (helmet, express-validator, etc.). Identify any security vulnerabilities or poor practices.",
       "levels": {
         "Excellent": "Demonstrates strong security awareness with input validation, SQL injection/NoSQL injection prevention, XSS protection, CORS configuration, environment variables for sensitive data, and secure HTTP headers.",
@@ -329,10 +321,7 @@
         "tests/performance/load-time.test.js",
         "tests/performance/query-efficiency.test.js"
       ],
-      "files_to_analyze": [
-        "grading-folder/frontend/**/*",
-        "grading-folder/backend/**/*"
-      ],
+      "files_to_analyze": ["grading-folder/frontend/**/*", "grading-folder/backend/**/*"],
       "gpt_instructions": "Evaluate performance optimization efforts. Look for: optimized images (Next.js Image component), efficient database queries (proper indexing, avoiding N+1 queries), lazy loading implementation, code splitting, memoization (useMemo, useCallback), efficient re-rendering patterns, and bundle size considerations. Check for unnecessary re-renders in React components. Assess if performance best practices are followed.",
       "levels": {
         "Excellent": "Application loads quickly with optimized images, efficient queries, lazy loading where appropriate, and minimal unnecessary re-renders. Demonstrates understanding of performance best practices.",
@@ -350,11 +339,7 @@
       "unit_test_weight": 0,
       "gpt_weight": 1.0,
       "test_files": [],
-      "files_to_analyze": [
-        "README.md",
-        "grading-folder/README.md",
-        "grading-folder/docs/**/*"
-      ],
+      "files_to_analyze": ["README.md", "grading-folder/README.md", "grading-folder/docs/**/*"],
       "gpt_instructions": "Evaluate documentation quality and completeness. Check README for: clear project description, comprehensive setup instructions, environment variables template/list, technology stack explanation, features list, usage instructions, and screenshots or demo links. Assess code comments for helpfulness and clarity. Look for API documentation if applicable. Evaluate overall documentation professionalism and usefulness for someone trying to run/understand the project.",
       "levels": {
         "Excellent": "Comprehensive README with project description, setup instructions, environment variables template, tech stack explanation, features list, and screenshots/demo. Code includes helpful comments.",
@@ -395,15 +380,15 @@
     "decimal_explanation": "Scores can include decimals (e.g., 2.5, 3.7) when performance falls between two levels"
   },
   "grade_scale": {
-    "A": {"min": 57.6, "max": 64},
-    "A-": {"min": 54.4, "max": 57.5},
-    "B+": {"min": 51.2, "max": 54.3},
-    "B": {"min": 48, "max": 51.1},
-    "B-": {"min": 44.8, "max": 47.9},
-    "C+": {"min": 41.6, "max": 44.7},
-    "C": {"min": 38.4, "max": 41.5},
-    "C-": {"min": 35.2, "max": 38.3},
-    "D": {"min": 32, "max": 35.1},
-    "F": {"min": 0, "max": 31.9}
+    "A": { "min": 57.6, "max": 64 },
+    "A-": { "min": 54.4, "max": 57.5 },
+    "B+": { "min": 51.2, "max": 54.3 },
+    "B": { "min": 48, "max": 51.1 },
+    "B-": { "min": 44.8, "max": 47.9 },
+    "C+": { "min": 41.6, "max": 44.7 },
+    "C": { "min": 38.4, "max": 41.5 },
+    "C-": { "min": 35.2, "max": 38.3 },
+    "D": { "min": 32, "max": 35.1 },
+    "F": { "min": 0, "max": 31.9 }
   }
 }

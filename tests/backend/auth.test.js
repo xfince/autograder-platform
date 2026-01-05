@@ -1,6 +1,6 @@
 /**
  * tests/backend/auth.test.js
- * 
+ *
  * Tests for authentication and authorization functionality
  * Evaluates: Criterion 5 (Authentication & Authorization)
  */
@@ -21,13 +21,13 @@ describe('Authentication & Authorization Tests', () => {
     total_tests: 0,
     passed: 0,
     failed: 0,
-    details: []
+    details: [],
   };
 
   let testUser = {
     email: 'testauth@example.com',
     password: 'SecurePassword123!',
-    name: 'Test Auth User'
+    name: 'Test Auth User',
   };
   let authToken;
   let userId;
@@ -44,7 +44,7 @@ describe('Authentication & Authorization Tests', () => {
         path.join(process.cwd(), 'server', 'index.js'),
         path.join(process.cwd(), 'server', 'server.js'),
         path.join(process.cwd(), 'backend', 'index.js'),
-        path.join(process.cwd(), 'backend', 'server.js')
+        path.join(process.cwd(), 'backend', 'server.js'),
       ];
 
       for (const appPath of possiblePaths) {
@@ -75,7 +75,7 @@ describe('Authentication & Authorization Tests', () => {
       if (server && server.close) {
         await new Promise((resolve) => server.close(resolve));
       }
-      
+
       if (mongoose.connection.readyState === 1) {
         await mongoose.connection.db.dropDatabase();
         await mongoose.connection.close();
@@ -97,7 +97,7 @@ describe('Authentication & Authorization Tests', () => {
     testResults.details.push({
       test: testName,
       passed,
-      error: error ? error.message : null
+      error: error ? error.message : null,
     });
   };
 
@@ -123,7 +123,7 @@ describe('Authentication & Authorization Tests', () => {
             if (response.status === 200 || response.status === 201) {
               registered = true;
               registrationResponse = response;
-              
+
               // Store user ID and token if provided
               if (response.body) {
                 userId = response.body.userId || response.body.user?._id || response.body.user?.id;
@@ -189,9 +189,7 @@ describe('Authentication & Authorization Tests', () => {
       try {
         // Try to find User model and check password storage
         const collections = await mongoose.connection.db.listCollections().toArray();
-        const userCollections = collections.filter(c => 
-          c.name.toLowerCase().includes('user')
-        );
+        const userCollections = collections.filter((c) => c.name.toLowerCase().includes('user'));
 
         if (userCollections.length === 0) {
           recordTest('Password hashing', false, new Error('User collection not found'));
@@ -208,12 +206,12 @@ describe('Authentication & Authorization Tests', () => {
         }
 
         // Check if password is hashed (bcrypt hashes start with $2a$, $2b$, or $2y$)
-        const isHashed = 
-          user.password && 
+        const isHashed =
+          user.password &&
           user.password !== testUser.password &&
-          (user.password.startsWith('$2a$') || 
-           user.password.startsWith('$2b$') || 
-           user.password.startsWith('$2y$'));
+          (user.password.startsWith('$2a$') ||
+            user.password.startsWith('$2b$') ||
+            user.password.startsWith('$2y$'));
 
         expect(isHashed).toBe(true);
         recordTest('Password hashing', true);
@@ -242,14 +240,14 @@ describe('Authentication & Authorization Tests', () => {
               .post(endpoint)
               .send({
                 email: testUser.email,
-                password: testUser.password
+                password: testUser.password,
               })
               .set('Content-Type', 'application/json');
 
             if (response.status === 200) {
               loggedIn = true;
               loginResponse = response;
-              
+
               // Store token for later tests
               if (response.body && response.body.token) {
                 authToken = response.body.token;
@@ -280,7 +278,7 @@ describe('Authentication & Authorization Tests', () => {
       try {
         // Verify token is a valid JWT format (has 3 parts separated by dots)
         const isJWT = authToken && authToken.split('.').length === 3;
-        
+
         // Try to decode (without verification)
         let decoded = null;
         if (isJWT) {
@@ -315,7 +313,7 @@ describe('Authentication & Authorization Tests', () => {
               .post(endpoint)
               .send({
                 email: testUser.email,
-                password: 'WrongPassword123!'
+                password: 'WrongPassword123!',
               })
               .set('Content-Type', 'application/json');
 
@@ -353,7 +351,7 @@ describe('Authentication & Authorization Tests', () => {
           '/api/profile',
           `/api/users/${userId || '507f1f77bcf86cd799439011'}`,
           '/api/posts',
-          '/api/dashboard'
+          '/api/dashboard',
         ];
 
         let hasProtectedRoute = false;
@@ -361,7 +359,7 @@ describe('Authentication & Authorization Tests', () => {
         for (const endpoint of protectedEndpoints) {
           try {
             const response = await request(app).get(endpoint);
-            
+
             // Should return 401 (Unauthorized) or 403 (Forbidden)
             if (response.status === 401 || response.status === 403) {
               hasProtectedRoute = true;
@@ -382,16 +380,16 @@ describe('Authentication & Authorization Tests', () => {
 
     test('Protected routes accept valid JWT token', async () => {
       if (!app || !authToken) {
-        recordTest('Protected routes accept valid token', false, new Error('No auth token available'));
+        recordTest(
+          'Protected routes accept valid token',
+          false,
+          new Error('No auth token available'),
+        );
         return;
       }
 
       try {
-        const protectedEndpoints = [
-          '/api/users/me',
-          '/api/users/profile',
-          '/api/profile'
-        ];
+        const protectedEndpoints = ['/api/users/me', '/api/users/profile', '/api/profile'];
 
         let acceptsToken = false;
 
@@ -426,11 +424,7 @@ describe('Authentication & Authorization Tests', () => {
       }
 
       try {
-        const protectedEndpoints = [
-          '/api/users/me',
-          '/api/users/profile',
-          '/api/profile'
-        ];
+        const protectedEndpoints = ['/api/users/me', '/api/users/profile', '/api/profile'];
 
         let rejectsInvalidToken = false;
         const invalidToken = 'invalid.token.here';
@@ -491,7 +485,7 @@ describe('Authentication & Authorization Tests', () => {
         if (!hasLogout) {
           console.log('Note: Logout endpoint not found (optional feature)');
         }
-        
+
         expect(true).toBe(true); // Don't fail if logout doesn't exist
         recordTest('Logout endpoint exists', hasLogout);
       } catch (error) {
@@ -512,17 +506,15 @@ describe('Authentication & Authorization Tests', () => {
         // Check if there are different user roles
         // This is advanced and optional
         const collections = await mongoose.connection.db.listCollections().toArray();
-        const userCollections = collections.filter(c => 
-          c.name.toLowerCase().includes('user')
-        );
+        const userCollections = collections.filter((c) => c.name.toLowerCase().includes('user'));
 
         if (userCollections.length > 0) {
           const collection = mongoose.connection.db.collection(userCollections[0].name);
           const users = await collection.find({}).limit(5).toArray();
-          
+
           // Check if any user has a 'role' field
-          const hasRoles = users.some(user => user.role || user.roles);
-          
+          const hasRoles = users.some((user) => user.role || user.roles);
+
           if (hasRoles) {
             recordTest('Authorization logic present', true);
           } else {
@@ -545,7 +537,7 @@ describe('Authentication & Authorization Tests', () => {
       try {
         // Check if JWT_SECRET is in environment variables
         const hasEnvSecret = process.env.JWT_SECRET && process.env.JWT_SECRET.length > 0;
-        
+
         expect(hasEnvSecret).toBe(true);
         recordTest('JWT secret from environment', true);
       } catch (error) {
@@ -572,7 +564,7 @@ describe('Authentication & Authorization Tests', () => {
               .send({
                 email: 'weakpass@example.com',
                 password: '123',
-                name: 'Weak Pass User'
+                name: 'Weak Pass User',
               })
               .set('Content-Type', 'application/json');
 

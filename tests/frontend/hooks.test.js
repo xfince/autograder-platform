@@ -1,6 +1,6 @@
 /**
  * tests/frontend/hooks.test.js
- * 
+ *
  * Tests for React hooks usage and state management
  * Evaluates: Criterion 2 (Front-End Implementation)
  */
@@ -18,7 +18,7 @@ describe('React Hooks & State Management Tests', () => {
     passed: 0,
     failed: 0,
     details: [],
-    hooks_usage: {}
+    hooks_usage: {},
   };
 
   const recordTest = (testName, passed, error = null) => {
@@ -31,7 +31,7 @@ describe('React Hooks & State Management Tests', () => {
     testResults.details.push({
       test: testName,
       passed,
-      error: error ? error.message : null
+      error: error ? error.message : null,
     });
   };
 
@@ -43,10 +43,10 @@ describe('React Hooks & State Management Tests', () => {
     test('Project uses useState for state management', () => {
       try {
         const { files, usesHook } = checkHookUsage('useState');
-        
+
         testResults.hooks_usage.useState = {
           used: usesHook,
-          file_count: files.length
+          file_count: files.length,
         };
 
         expect(usesHook).toBe(true);
@@ -60,7 +60,7 @@ describe('React Hooks & State Management Tests', () => {
     test('useState is imported correctly', () => {
       try {
         const hasCorrectImport = checkCorrectImport('useState');
-        
+
         expect(hasCorrectImport).toBe(true);
         recordTest('useState import', true);
       } catch (error) {
@@ -75,31 +75,33 @@ describe('React Hooks & State Management Tests', () => {
           'grading-folder/frontend/components',
           'grading-folder/frontend/pages',
           'components',
-          'pages'
+          'pages',
         ];
 
         let followsImmutability = false;
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js')
+            const files = getAllFiles(dir).filter(
+              (f) => f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js'),
             );
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Look for immutable state update patterns
-              if (content.includes('useState') &&
-                  (content.includes('...') || // spread operator
-                   content.includes('map(') ||
-                   content.includes('filter(') ||
-                   content.includes('concat('))) {
+              if (
+                content.includes('useState') &&
+                (content.includes('...') || // spread operator
+                  content.includes('map(') ||
+                  content.includes('filter(') ||
+                  content.includes('concat('))
+              ) {
                 followsImmutability = true;
                 break;
               }
             }
-            
+
             if (followsImmutability) break;
           }
         }
@@ -116,10 +118,10 @@ describe('React Hooks & State Management Tests', () => {
     test('Project uses useEffect for side effects', () => {
       try {
         const { files, usesHook } = checkHookUsage('useEffect');
-        
+
         testResults.hooks_usage.useEffect = {
           used: usesHook,
-          file_count: files.length
+          file_count: files.length,
         };
 
         expect(usesHook).toBe(true);
@@ -136,27 +138,25 @@ describe('React Hooks & State Management Tests', () => {
           'grading-folder/frontend/components',
           'grading-folder/frontend/pages',
           'components',
-          'pages'
+          'pages',
         ];
 
         let usesDependencies = false;
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Look for useEffect with dependency array
               if (content.match(/useEffect\([^)]*,\s*\[/)) {
                 usesDependencies = true;
                 break;
               }
             }
-            
+
             if (usesDependencies) break;
           }
         }
@@ -175,28 +175,28 @@ describe('React Hooks & State Management Tests', () => {
           'grading-folder/frontend/components',
           'grading-folder/frontend/pages',
           'components',
-          'pages'
+          'pages',
         ];
 
         let hasCleanup = false;
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Look for cleanup functions (return in useEffect)
-              if (content.includes('useEffect') &&
-                  content.match(/useEffect\([^{]*{\s*[^}]*return\s*\(\)\s*=>/)) {
+              if (
+                content.includes('useEffect') &&
+                content.match(/useEffect\([^{]*{\s*[^}]*return\s*\(\)\s*=>/)
+              ) {
                 hasCleanup = true;
                 break;
               }
             }
-            
+
             if (hasCleanup) break;
           }
         }
@@ -214,10 +214,10 @@ describe('React Hooks & State Management Tests', () => {
     test('Project uses useContext for global state (if applicable)', () => {
       try {
         const { files, usesHook } = checkHookUsage('useContext');
-        
+
         testResults.hooks_usage.useContext = {
           used: usesHook,
-          file_count: files.length
+          file_count: files.length,
         };
 
         // useContext is good but not always necessary
@@ -230,30 +230,26 @@ describe('React Hooks & State Management Tests', () => {
 
     test('Context is properly created and provided', () => {
       try {
-        const allDirs = [
-          'grading-folder/frontend',
-          'src'
-        ];
+        const allDirs = ['grading-folder/frontend', 'src'];
 
         let hasContext = false;
 
         for (const dir of allDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js')
+            const files = getAllFiles(dir).filter(
+              (f) => f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js'),
             );
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Look for Context creation
-              if (content.includes('createContext') ||
-                  content.includes('Context.Provider')) {
+              if (content.includes('createContext') || content.includes('Context.Provider')) {
                 hasContext = true;
                 break;
               }
             }
-            
+
             if (hasContext) break;
           }
         }
@@ -273,7 +269,7 @@ describe('React Hooks & State Management Tests', () => {
           'grading-folder/frontend/hooks',
           'grading-folder/frontend/src/hooks',
           'hooks',
-          'src/hooks'
+          'src/hooks',
         ];
 
         let hasCustomHooks = false;
@@ -281,10 +277,10 @@ describe('React Hooks & State Management Tests', () => {
 
         for (const dir of hooksDirs) {
           if (fs.existsSync(dir)) {
-            customHookFiles = fs.readdirSync(dir).filter(f => 
-              f.startsWith('use') && (f.endsWith('.js') || f.endsWith('.ts'))
-            );
-            
+            customHookFiles = fs
+              .readdirSync(dir)
+              .filter((f) => f.startsWith('use') && (f.endsWith('.js') || f.endsWith('.ts')));
+
             if (customHookFiles.length > 0) {
               hasCustomHooks = true;
               break;
@@ -294,7 +290,7 @@ describe('React Hooks & State Management Tests', () => {
 
         testResults.hooks_usage.custom_hooks = {
           used: hasCustomHooks,
-          count: customHookFiles.length
+          count: customHookFiles.length,
         };
 
         // Custom hooks are advanced
@@ -307,26 +303,25 @@ describe('React Hooks & State Management Tests', () => {
 
     test('Custom hooks follow naming convention (use prefix)', () => {
       try {
-        const allDirs = [
-          'grading-folder/frontend',
-          'src'
-        ];
+        const allDirs = ['grading-folder/frontend', 'src'];
 
         let customHooks = [];
 
         for (const dir of allDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js')
+            const files = getAllFiles(dir).filter(
+              (f) => f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js'),
             );
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
               const basename = path.basename(file, path.extname(file));
-              
+
               // Look for custom hook definitions
-              if (basename.startsWith('use') && 
-                  (content.includes('useState') || content.includes('useEffect'))) {
+              if (
+                basename.startsWith('use') &&
+                (content.includes('useState') || content.includes('useEffect'))
+              ) {
                 customHooks.push(basename);
               }
             }
@@ -347,10 +342,10 @@ describe('React Hooks & State Management Tests', () => {
     test('Project uses useCallback for memoization (optimization)', () => {
       try {
         const { files, usesHook } = checkHookUsage('useCallback');
-        
+
         testResults.hooks_usage.useCallback = {
           used: usesHook,
-          file_count: files.length
+          file_count: files.length,
         };
 
         // useCallback is optimization, not required
@@ -364,10 +359,10 @@ describe('React Hooks & State Management Tests', () => {
     test('Project uses useMemo for expensive computations', () => {
       try {
         const { files, usesHook } = checkHookUsage('useMemo');
-        
+
         testResults.hooks_usage.useMemo = {
           used: usesHook,
-          file_count: files.length
+          file_count: files.length,
         };
 
         // useMemo is optimization, not required
@@ -383,10 +378,10 @@ describe('React Hooks & State Management Tests', () => {
     test('Project uses useRef where appropriate', () => {
       try {
         const { files, usesHook } = checkHookUsage('useRef');
-        
+
         testResults.hooks_usage.useRef = {
           used: usesHook,
-          file_count: files.length
+          file_count: files.length,
         };
 
         // useRef is useful but not always needed
@@ -402,10 +397,10 @@ describe('React Hooks & State Management Tests', () => {
     test('Complex state uses useReducer (if applicable)', () => {
       try {
         const { files, usesHook } = checkHookUsage('useReducer');
-        
+
         testResults.hooks_usage.useReducer = {
           used: usesHook,
-          file_count: files.length
+          file_count: files.length,
         };
 
         // useReducer is for complex state, not always needed
@@ -420,7 +415,12 @@ describe('React Hooks & State Management Tests', () => {
   describe('State Management Libraries', () => {
     test('Redux/Zustand/other state library usage (if applicable)', () => {
       try {
-        let packageJsonPath = path.join(process.cwd(), 'grading-folder', 'frontend', 'package.json');
+        let packageJsonPath = path.join(
+          process.cwd(),
+          'grading-folder',
+          'frontend',
+          'package.json',
+        );
         if (!fs.existsSync(packageJsonPath)) {
           packageJsonPath = path.join(process.cwd(), 'package.json');
         }
@@ -431,7 +431,7 @@ describe('React Hooks & State Management Tests', () => {
           const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
           const deps = {
             ...packageJson.dependencies,
-            ...packageJson.devDependencies
+            ...packageJson.devDependencies,
           };
 
           if (deps.redux || deps['@reduxjs/toolkit']) {
@@ -451,7 +451,7 @@ describe('React Hooks & State Management Tests', () => {
 
         testResults.hooks_usage.state_library = {
           used: usesStateLibrary,
-          library: stateLibrary
+          library: stateLibrary,
         };
 
         // State libraries are advanced, not required for all projects
@@ -470,7 +470,7 @@ describe('React Hooks & State Management Tests', () => {
           'grading-folder/frontend/components',
           'grading-folder/frontend/pages',
           'components',
-          'pages'
+          'pages',
         ];
 
         let followsRules = true;
@@ -478,21 +478,21 @@ describe('React Hooks & State Management Tests', () => {
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Check for hooks inside conditionals (rough heuristic)
               const lines = content.split('\n');
               for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
-                
-                if ((line.includes('if (') || line.includes('if(')) &&
-                    i + 1 < lines.length &&
-                    lines[i + 1].includes('use')) {
+
+                if (
+                  (line.includes('if (') || line.includes('if(')) &&
+                  i + 1 < lines.length &&
+                  lines[i + 1].includes('use')
+                ) {
                   violations.push(path.basename(file));
                   followsRules = false;
                   break;
@@ -515,27 +515,25 @@ describe('React Hooks & State Management Tests', () => {
           'grading-folder/frontend/components',
           'grading-folder/frontend/pages',
           'components',
-          'pages'
+          'pages',
         ];
 
         let hasDependencyArrays = false;
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Look for useEffect/useCallback/useMemo with deps
               if (content.match(/(useEffect|useCallback|useMemo)\([^)]*,\s*\[/)) {
                 hasDependencyArrays = true;
                 break;
               }
             }
-            
+
             if (hasDependencyArrays) break;
           }
         }
@@ -556,7 +554,7 @@ describe('React Hooks & State Management Tests', () => {
       'grading-folder/frontend/app',
       'components',
       'pages',
-      'app'
+      'app',
     ];
 
     let usesHook = false;
@@ -564,13 +562,13 @@ describe('React Hooks & State Management Tests', () => {
 
     for (const dir of componentDirs) {
       if (fs.existsSync(dir)) {
-        const files = getAllFiles(dir).filter(f => 
-          f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js')
+        const files = getAllFiles(dir).filter(
+          (f) => f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js'),
         );
 
         for (const file of files) {
           const content = fs.readFileSync(file, 'utf8');
-          
+
           if (content.includes(hookName)) {
             usesHook = true;
             filesWithHook.push(path.basename(file));
@@ -587,28 +585,28 @@ describe('React Hooks & State Management Tests', () => {
       'grading-folder/frontend/components',
       'grading-folder/frontend/pages',
       'components',
-      'pages'
+      'pages',
     ];
 
     let hasCorrectImport = false;
 
     for (const dir of componentDirs) {
       if (fs.existsSync(dir)) {
-        const files = getAllFiles(dir).filter(f => 
-          f.endsWith('.jsx') || f.endsWith('.tsx')
-        );
+        const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
         for (const file of files) {
           const content = fs.readFileSync(file, 'utf8');
-          
+
           // Check for proper import
-          if (content.match(new RegExp(`import.*${hookName}.*from ['"]react['"]`)) ||
-              content.match(new RegExp(`import.*{[^}]*${hookName}[^}]*}.*from ['"]react['"]`))) {
+          if (
+            content.match(new RegExp(`import.*${hookName}.*from ['"]react['"]`)) ||
+            content.match(new RegExp(`import.*{[^}]*${hookName}[^}]*}.*from ['"]react['"]`))
+          ) {
             hasCorrectImport = true;
             break;
           }
         }
-        
+
         if (hasCorrectImport) break;
       }
     }
@@ -620,11 +618,11 @@ describe('React Hooks & State Management Tests', () => {
     try {
       if (fs.existsSync(dir)) {
         const files = fs.readdirSync(dir);
-        
-        files.forEach(file => {
+
+        files.forEach((file) => {
           const filePath = path.join(dir, file);
           const stat = fs.statSync(filePath);
-          
+
           if (stat.isDirectory()) {
             getAllFiles(filePath, fileList);
           } else {
@@ -635,7 +633,7 @@ describe('React Hooks & State Management Tests', () => {
     } catch (error) {
       // Ignore errors
     }
-    
+
     return fileList;
   }
 });

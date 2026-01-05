@@ -1,6 +1,6 @@
 /**
  * tests/backend/middleware.test.js
- * 
+ *
  * Tests for middleware functionality
  * Evaluates: Criterion 3 (Back-End Architecture)
  */
@@ -20,7 +20,7 @@ describe('Middleware Tests', () => {
     total_tests: 0,
     passed: 0,
     failed: 0,
-    details: []
+    details: [],
   };
 
   beforeAll(async () => {
@@ -35,7 +35,7 @@ describe('Middleware Tests', () => {
         path.join(process.cwd(), 'server', 'index.js'),
         path.join(process.cwd(), 'server', 'server.js'),
         path.join(process.cwd(), 'backend', 'index.js'),
-        path.join(process.cwd(), 'backend', 'server.js')
+        path.join(process.cwd(), 'backend', 'server.js'),
       ];
 
       for (const appPath of possiblePaths) {
@@ -66,7 +66,7 @@ describe('Middleware Tests', () => {
       if (server && server.close) {
         await new Promise((resolve) => server.close(resolve));
       }
-      
+
       if (mongoose.connection.readyState === 1) {
         await mongoose.connection.close();
       }
@@ -87,7 +87,7 @@ describe('Middleware Tests', () => {
     testResults.details.push({
       test: testName,
       passed,
-      error: error ? error.message : null
+      error: error ? error.message : null,
     });
   };
 
@@ -142,7 +142,7 @@ describe('Middleware Tests', () => {
           .set('Access-Control-Request-Method', 'GET');
 
         // Check for CORS headers
-        const hasCORS = 
+        const hasCORS =
           response.headers['access-control-allow-origin'] ||
           response.headers['access-control-allow-methods'];
 
@@ -164,18 +164,14 @@ describe('Middleware Tests', () => {
 
       try {
         // Try to access protected endpoints without token
-        const protectedEndpoints = [
-          '/api/users/me',
-          '/api/profile',
-          '/api/dashboard'
-        ];
+        const protectedEndpoints = ['/api/users/me', '/api/profile', '/api/dashboard'];
 
         let hasAuthMiddleware = false;
 
         for (const endpoint of protectedEndpoints) {
           try {
             const responseWithoutToken = await request(app).get(endpoint);
-            
+
             // Should return 401 or 403 (unauthorized)
             if (responseWithoutToken.status === 401 || responseWithoutToken.status === 403) {
               // Try with invalid token
@@ -183,7 +179,10 @@ describe('Middleware Tests', () => {
                 .get(endpoint)
                 .set('Authorization', 'Bearer invalid_token');
 
-              if (responseWithInvalidToken.status === 401 || responseWithInvalidToken.status === 403) {
+              if (
+                responseWithInvalidToken.status === 401 ||
+                responseWithInvalidToken.status === 403
+              ) {
                 hasAuthMiddleware = true;
                 break;
               }
@@ -217,7 +216,7 @@ describe('Middleware Tests', () => {
         // Check if error response is structured
         expect(response).toBeDefined();
         expect(response.status).toBeDefined();
-        
+
         recordTest('Global error handler', true);
       } catch (error) {
         recordTest('Global error handler', false, error);
@@ -244,17 +243,19 @@ describe('Middleware Tests', () => {
             response1.body.error ||
             response1.body.message ||
             response1.body.msg ||
-            response1.body.errors
+            response1.body.errors,
           );
         }
 
         if (response2.status >= 400 && response2.body) {
-          hasStructure = hasStructure && Boolean(
-            response2.body.error ||
-            response2.body.message ||
-            response2.body.msg ||
-            response2.body.errors
-          );
+          hasStructure =
+            hasStructure &&
+            Boolean(
+              response2.body.error ||
+              response2.body.message ||
+              response2.body.msg ||
+              response2.body.errors,
+            );
         }
 
         expect(hasStructure).toBe(true);
@@ -322,15 +323,15 @@ describe('Middleware Tests', () => {
         if (!fs.existsSync(packageJsonPath)) {
           packageJsonPath = path.join(process.cwd(), 'package.json');
         }
-        
+
         if (fs.existsSync(packageJsonPath)) {
           const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
           const dependencies = {
             ...packageJson.dependencies,
-            ...packageJson.devDependencies
+            ...packageJson.devDependencies,
           };
 
-          const hasLoggingPackage = 
+          const hasLoggingPackage =
             dependencies.morgan ||
             dependencies.winston ||
             dependencies['express-winston'] ||
@@ -362,17 +363,16 @@ describe('Middleware Tests', () => {
         if (!fs.existsSync(packageJsonPath)) {
           packageJsonPath = path.join(process.cwd(), 'package.json');
         }
-        
+
         if (fs.existsSync(packageJsonPath)) {
           const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
           const dependencies = {
             ...packageJson.dependencies,
-            ...packageJson.devDependencies
+            ...packageJson.devDependencies,
           };
 
-          const hasRateLimiting = 
-            dependencies['express-rate-limit'] ||
-            dependencies['rate-limiter-flexible'];
+          const hasRateLimiting =
+            dependencies['express-rate-limit'] || dependencies['rate-limiter-flexible'];
 
           // Rate limiting is advanced feature
           recordTest('Rate limiting middleware', Boolean(hasRateLimiting));
@@ -398,7 +398,7 @@ describe('Middleware Tests', () => {
         const response = await request(app).get('/api');
 
         // Check for common security headers
-        const hasSecurityHeaders = 
+        const hasSecurityHeaders =
           response.headers['x-content-type-options'] ||
           response.headers['x-frame-options'] ||
           response.headers['strict-transport-security'] ||
@@ -427,7 +427,7 @@ describe('Middleware Tests', () => {
           path.join(process.cwd(), 'grading-folder', 'server', 'middleware'),
           path.join(process.cwd(), 'server', 'middleware'),
           path.join(process.cwd(), 'backend', 'middleware'),
-          path.join(process.cwd(), 'middleware')
+          path.join(process.cwd(), 'middleware'),
         ];
 
         let hasCustomMiddleware = false;

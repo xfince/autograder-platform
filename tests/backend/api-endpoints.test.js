@@ -1,6 +1,6 @@
 /**
  * tests/backend/api-endpoints.test.js
- * 
+ *
  * Tests for RESTful API endpoints functionality
  * Evaluates: Criterion 3 (Back-End Architecture)
  */
@@ -20,7 +20,7 @@ describe('Backend API Endpoints Tests', () => {
     total_tests: 0,
     passed: 0,
     failed: 0,
-    details: []
+    details: [],
   };
 
   // Setup: Try to load the student's app
@@ -41,7 +41,7 @@ describe('Backend API Endpoints Tests', () => {
         path.join(process.cwd(), 'backend', 'server.js'),
         path.join(process.cwd(), 'backend', 'app.js'),
         path.join(process.cwd(), 'index.js'),
-        path.join(process.cwd(), 'server.js')
+        path.join(process.cwd(), 'server.js'),
       ];
 
       for (const appPath of possiblePaths) {
@@ -81,7 +81,7 @@ describe('Backend API Endpoints Tests', () => {
       if (server && server.close) {
         await new Promise((resolve) => server.close(resolve));
       }
-      
+
       // Clean up test data
       if (mongoose.connection.readyState === 1) {
         await mongoose.connection.db.dropDatabase();
@@ -106,7 +106,7 @@ describe('Backend API Endpoints Tests', () => {
     testResults.details.push({
       test: testName,
       passed,
-      error: error ? error.message : null
+      error: error ? error.message : null,
     });
   };
 
@@ -167,10 +167,13 @@ describe('Backend API Endpoints Tests', () => {
       try {
         // Try common POST endpoints
         const endpoints = [
-          { path: '/api/users', data: { name: 'Test User', email: 'test@example.com', password: 'Test123!' } },
+          {
+            path: '/api/users',
+            data: { name: 'Test User', email: 'test@example.com', password: 'Test123!' },
+          },
           { path: '/api/posts', data: { title: 'Test Post', content: 'Test content' } },
           { path: '/api/items', data: { name: 'Test Item', description: 'Test description' } },
-          { path: '/api/todos', data: { title: 'Test Todo', completed: false } }
+          { path: '/api/todos', data: { title: 'Test Todo', completed: false } },
         ];
 
         let created = false;
@@ -215,7 +218,7 @@ describe('Backend API Endpoints Tests', () => {
         for (const endpoint of endpoints) {
           try {
             const response = await request(app).get(endpoint);
-            
+
             if (response.status === 200 && response.body) {
               retrieved = true;
               break;
@@ -243,7 +246,7 @@ describe('Backend API Endpoints Tests', () => {
         const endpoints = [
           `/api/users/${testResourceId}`,
           `/api/posts/${testResourceId}`,
-          `/api/items/${testResourceId}`
+          `/api/items/${testResourceId}`,
         ];
 
         let retrieved = false;
@@ -278,7 +281,7 @@ describe('Backend API Endpoints Tests', () => {
         const updateEndpoints = [
           { path: `/api/users/${testId}`, data: { name: 'Updated User' } },
           { path: `/api/posts/${testId}`, data: { title: 'Updated Post' } },
-          { path: `/api/items/${testId}`, data: { name: 'Updated Item' } }
+          { path: `/api/items/${testId}`, data: { name: 'Updated Item' } },
         ];
 
         let updated = false;
@@ -326,11 +329,7 @@ describe('Backend API Endpoints Tests', () => {
 
       try {
         const testId = testResourceId || '507f1f77bcf86cd799439011';
-        const endpoints = [
-          `/api/users/${testId}`,
-          `/api/posts/${testId}`,
-          `/api/items/${testId}`
-        ];
+        const endpoints = [`/api/users/${testId}`, `/api/posts/${testId}`, `/api/items/${testId}`];
 
         let deleted = false;
         for (const endpoint of endpoints) {
@@ -377,7 +376,7 @@ describe('Backend API Endpoints Tests', () => {
             .post('/api/users')
             .send({ invalid: 'data' })
             .set('Content-Type', 'application/json');
-          
+
           // Should return 400-level error for invalid data
           if (response400.status >= 200 && response400.status < 400) {
             properStatusCodes = false;
@@ -408,7 +407,7 @@ describe('Backend API Endpoints Tests', () => {
           try {
             const response = await request(app).get(endpoint);
             const contentType = response.headers['content-type'];
-            
+
             if (contentType && contentType.includes('application/json')) {
               hasJsonResponse = true;
               break;
@@ -436,16 +435,18 @@ describe('Backend API Endpoints Tests', () => {
 
       try {
         // Test that API doesn't crash with async operations
-        const response = await request(app)
-          .get('/api/users')
-          .timeout(5000);
+        const response = await request(app).get('/api/users').timeout(5000);
 
         // If we get a response (any response), async is handled
         expect(response).toBeDefined();
         recordTest('Async operations handling', true);
       } catch (error) {
         if (error.code === 'ECONNABORTED') {
-          recordTest('Async operations handling', false, new Error('Request timeout - possible async issue'));
+          recordTest(
+            'Async operations handling',
+            false,
+            new Error('Request timeout - possible async issue'),
+          );
         } else {
           recordTest('Async operations handling', true); // Other errors are okay
         }
@@ -464,13 +465,12 @@ describe('Backend API Endpoints Tests', () => {
       try {
         // Try to trigger an error
         const response = await request(app).get('/api/users/invalid-id-format');
-        
+
         if (response.status >= 400) {
           // Check if error response has structure
-          const hasErrorStructure = 
-            response.body && 
-            (response.body.error || response.body.message || response.body.errors);
-          
+          const hasErrorStructure =
+            response.body && (response.body.error || response.body.message || response.body.errors);
+
           expect(hasErrorStructure).toBe(true);
           recordTest('Structured error responses', true);
         } else {

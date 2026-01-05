@@ -1,6 +1,6 @@
 /**
  * tests/frontend/components.test.js
- * 
+ *
  * Tests for React/Next.js component implementation
  * Evaluates: Criterion 2 (Front-End Implementation)
  */
@@ -20,7 +20,7 @@ describe('Frontend Component Tests', () => {
     passed: 0,
     failed: 0,
     details: [],
-    components_found: []
+    components_found: [],
   };
 
   const recordTest = (testName, passed, error = null) => {
@@ -33,7 +33,7 @@ describe('Frontend Component Tests', () => {
     testResults.details.push({
       test: testName,
       passed,
-      error: error ? error.message : null
+      error: error ? error.message : null,
     });
   };
 
@@ -48,7 +48,7 @@ describe('Frontend Component Tests', () => {
           'grading-folder/frontend/components',
           'grading-folder/frontend/src/components',
           'components',
-          'src/components'
+          'src/components',
         ];
 
         let hasComponents = false;
@@ -57,16 +57,14 @@ describe('Frontend Component Tests', () => {
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
             const files = getAllFiles(dir);
-            const componentFiles = files.filter(f => 
-              f.endsWith('.jsx') || 
-              f.endsWith('.tsx') || 
-              f.endsWith('.js')
+            const componentFiles = files.filter(
+              (f) => f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js'),
             );
-            
+
             if (componentFiles.length > 0) {
               hasComponents = true;
               componentCount = componentFiles.length;
-              testResults.components_found = componentFiles.map(f => path.basename(f));
+              testResults.components_found = componentFiles.map((f) => path.basename(f));
               break;
             }
           }
@@ -86,7 +84,7 @@ describe('Frontend Component Tests', () => {
         const componentDirs = [
           'grading-folder/frontend/components',
           'components',
-          'src/components'
+          'src/components',
         ];
 
         let properNaming = false;
@@ -94,8 +92,8 @@ describe('Frontend Component Tests', () => {
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            componentFiles = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
+            componentFiles = getAllFiles(dir).filter(
+              (f) => f.endsWith('.jsx') || f.endsWith('.tsx'),
             );
             break;
           }
@@ -103,7 +101,7 @@ describe('Frontend Component Tests', () => {
 
         if (componentFiles.length > 0) {
           // Check if components start with capital letter (PascalCase)
-          const wellNamed = componentFiles.filter(f => {
+          const wellNamed = componentFiles.filter((f) => {
             const basename = path.basename(f, path.extname(f));
             return /^[A-Z]/.test(basename);
           });
@@ -120,17 +118,14 @@ describe('Frontend Component Tests', () => {
 
     test('Components are modular (separate files)', () => {
       try {
-        const componentDirs = [
-          'grading-folder/frontend/components',
-          'components'
-        ];
+        const componentDirs = ['grading-folder/frontend/components', 'components'];
 
         let componentFiles = [];
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            componentFiles = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
+            componentFiles = getAllFiles(dir).filter(
+              (f) => f.endsWith('.jsx') || f.endsWith('.tsx'),
             );
             break;
           }
@@ -151,31 +146,28 @@ describe('Frontend Component Tests', () => {
   describe('Component Implementation Quality', () => {
     test('Components use functional component pattern', () => {
       try {
-        const componentDirs = [
-          'grading-folder/frontend/components',
-          'components'
-        ];
+        const componentDirs = ['grading-folder/frontend/components', 'components'];
 
         let usesFunctional = false;
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Check for functional component patterns
-              if (content.includes('const ') && 
-                  (content.includes('return (') || content.includes('return(')) &&
-                  (content.includes('=>') || content.includes('function'))) {
+              if (
+                content.includes('const ') &&
+                (content.includes('return (') || content.includes('return(')) &&
+                (content.includes('=>') || content.includes('function'))
+              ) {
                 usesFunctional = true;
                 break;
               }
             }
-            
+
             if (usesFunctional) break;
           }
         }
@@ -190,31 +182,28 @@ describe('Frontend Component Tests', () => {
 
     test('Components properly export (default or named)', () => {
       try {
-        const componentDirs = [
-          'grading-folder/frontend/components',
-          'components'
-        ];
+        const componentDirs = ['grading-folder/frontend/components', 'components'];
 
         let hasExports = false;
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Check for exports
-              if (content.includes('export default') || 
-                  content.includes('export {') ||
-                  content.includes('export const')) {
+              if (
+                content.includes('export default') ||
+                content.includes('export {') ||
+                content.includes('export const')
+              ) {
                 hasExports = true;
                 break;
               }
             }
-            
+
             if (hasExports) break;
           }
         }
@@ -229,33 +218,31 @@ describe('Frontend Component Tests', () => {
 
     test('Components import React/Next.js properly', () => {
       try {
-        const componentDirs = [
-          'grading-folder/frontend/components',
-          'components'
-        ];
+        const componentDirs = ['grading-folder/frontend/components', 'components'];
 
         let hasReactImports = false;
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Check for React imports (or Next.js which includes React)
-              if (content.includes("from 'react'") || 
-                  content.includes('from "react"') ||
-                  content.includes("from 'next/") ||
-                  // React 17+ doesn't require import in JSX files
-                  file.endsWith('.jsx') || file.endsWith('.tsx')) {
+              if (
+                content.includes("from 'react'") ||
+                content.includes('from "react"') ||
+                content.includes("from 'next/") ||
+                // React 17+ doesn't require import in JSX files
+                file.endsWith('.jsx') ||
+                file.endsWith('.tsx')
+              ) {
                 hasReactImports = true;
                 break;
               }
             }
-            
+
             if (hasReactImports) break;
           }
         }
@@ -272,27 +259,36 @@ describe('Frontend Component Tests', () => {
   describe('Component Reusability', () => {
     test('Project has reusable UI components', () => {
       try {
-        const componentDirs = [
-          'grading-folder/frontend/components',
-          'components'
-        ];
+        const componentDirs = ['grading-folder/frontend/components', 'components'];
 
         let reusableComponents = [];
         const commonReusableNames = [
-          'button', 'input', 'card', 'modal', 'form', 
-          'header', 'footer', 'navbar', 'sidebar', 'layout',
-          'loading', 'spinner', 'alert', 'badge', 'avatar'
+          'button',
+          'input',
+          'card',
+          'modal',
+          'form',
+          'header',
+          'footer',
+          'navbar',
+          'sidebar',
+          'layout',
+          'loading',
+          'spinner',
+          'alert',
+          'badge',
+          'avatar',
         ];
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
             const files = getAllFiles(dir);
-            
-            reusableComponents = files.filter(f => {
+
+            reusableComponents = files.filter((f) => {
               const basename = path.basename(f).toLowerCase();
-              return commonReusableNames.some(name => basename.includes(name));
+              return commonReusableNames.some((name) => basename.includes(name));
             });
-            
+
             break;
           }
         }
@@ -308,31 +304,28 @@ describe('Frontend Component Tests', () => {
 
     test('Components accept props for customization', () => {
       try {
-        const componentDirs = [
-          'grading-folder/frontend/components',
-          'components'
-        ];
+        const componentDirs = ['grading-folder/frontend/components', 'components'];
 
         let usesProps = false;
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Check for props usage
-              if (content.includes('props.') || 
-                  content.includes('{ ') && content.includes(' }') ||
-                  content.match(/const \w+ = \([^)]*\{[^}]*\}/)) {
+              if (
+                content.includes('props.') ||
+                (content.includes('{ ') && content.includes(' }')) ||
+                content.match(/const \w+ = \([^)]*\{[^}]*\}/)
+              ) {
                 usesProps = true;
                 break;
               }
             }
-            
+
             if (usesProps) break;
           }
         }
@@ -349,30 +342,28 @@ describe('Frontend Component Tests', () => {
   describe('JSX/TSX Syntax', () => {
     test('Components use proper JSX syntax', () => {
       try {
-        const componentDirs = [
-          'grading-folder/frontend/components',
-          'components'
-        ];
+        const componentDirs = ['grading-folder/frontend/components', 'components'];
 
         let usesJSX = false;
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Check for JSX syntax
-              if (content.includes('<') && content.includes('>') &&
-                  (content.includes('</') || content.includes('/>'))) {
+              if (
+                content.includes('<') &&
+                content.includes('>') &&
+                (content.includes('</') || content.includes('/>'))
+              ) {
                 usesJSX = true;
                 break;
               }
             }
-            
+
             if (usesJSX) break;
           }
         }
@@ -387,33 +378,35 @@ describe('Frontend Component Tests', () => {
 
     test('Components use proper HTML semantics', () => {
       try {
-        const componentDirs = [
-          'grading-folder/frontend/components',
-          'components'
-        ];
+        const componentDirs = ['grading-folder/frontend/components', 'components'];
 
         let usesSemanticHTML = false;
         const semanticTags = [
-          '<header', '<footer', '<nav', '<main', '<section', 
-          '<article', '<aside', '<form', '<button'
+          '<header',
+          '<footer',
+          '<nav',
+          '<main',
+          '<section',
+          '<article',
+          '<aside',
+          '<form',
+          '<button',
         ];
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Check for semantic HTML tags
-              if (semanticTags.some(tag => content.includes(tag))) {
+              if (semanticTags.some((tag) => content.includes(tag))) {
                 usesSemanticHTML = true;
                 break;
               }
             }
-            
+
             if (usesSemanticHTML) break;
           }
         }
@@ -429,32 +422,29 @@ describe('Frontend Component Tests', () => {
   describe('Component Separation of Concerns', () => {
     test('Logic and presentation are properly separated', () => {
       try {
-        const componentDirs = [
-          'grading-folder/frontend/components',
-          'components'
-        ];
+        const componentDirs = ['grading-folder/frontend/components', 'components'];
 
         let hasSeparation = false;
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             // Check if components use hooks for logic separation
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
-              if ((content.includes('useState') || 
-                   content.includes('useEffect') ||
-                   content.includes('useCallback')) &&
-                  content.includes('return (')) {
+
+              if (
+                (content.includes('useState') ||
+                  content.includes('useEffect') ||
+                  content.includes('useCallback')) &&
+                content.includes('return (')
+              ) {
                 hasSeparation = true;
                 break;
               }
             }
-            
+
             if (hasSeparation) break;
           }
         }
@@ -468,22 +458,17 @@ describe('Frontend Component Tests', () => {
 
     test('No excessive prop drilling (max 2-3 levels)', () => {
       try {
-        const componentDirs = [
-          'grading-folder/frontend/components',
-          'components'
-        ];
+        const componentDirs = ['grading-folder/frontend/components', 'components'];
 
         let hasMinimalPropDrilling = true;
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Look for excessive prop passing patterns
               // This is a heuristic - checking for many props being passed
               const propMatches = content.match(/\w+={[^}]+}/g);
@@ -506,24 +491,19 @@ describe('Frontend Component Tests', () => {
   describe('Component Size & Complexity', () => {
     test('Components are reasonably sized (< 300 lines)', () => {
       try {
-        const componentDirs = [
-          'grading-folder/frontend/components',
-          'components'
-        ];
+        const componentDirs = ['grading-folder/frontend/components', 'components'];
 
         let allReasonablySized = true;
         let largeComponents = [];
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
               const lineCount = content.split('\n').length;
-              
+
               if (lineCount > 300) {
                 allReasonablySized = false;
                 largeComponents.push(path.basename(file));
@@ -543,10 +523,7 @@ describe('Frontend Component Tests', () => {
   describe('Styling Approach', () => {
     test('Components have styling (CSS/Tailwind/styled-components)', () => {
       try {
-        const componentDirs = [
-          'grading-folder/frontend/components',
-          'components'
-        ];
+        const componentDirs = ['grading-folder/frontend/components', 'components'];
 
         let hasStyling = false;
 
@@ -556,19 +533,21 @@ describe('Frontend Component Tests', () => {
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Check for various styling approaches
-              if (content.includes('className=') ||
-                  content.includes('style={') ||
-                  content.includes('styled.') ||
-                  content.includes('css`') ||
-                  file.endsWith('.module.css') ||
-                  file.endsWith('.module.scss')) {
+              if (
+                content.includes('className=') ||
+                content.includes('style={') ||
+                content.includes('styled.') ||
+                content.includes('css`') ||
+                file.endsWith('.module.css') ||
+                file.endsWith('.module.scss')
+              ) {
                 hasStyling = true;
                 break;
               }
             }
-            
+
             if (hasStyling) break;
           }
         }
@@ -583,22 +562,17 @@ describe('Frontend Component Tests', () => {
 
     test('Styling is consistent across components', () => {
       try {
-        const componentDirs = [
-          'grading-folder/frontend/components',
-          'components'
-        ];
+        const componentDirs = ['grading-folder/frontend/components', 'components'];
 
         let stylingApproaches = new Set();
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               if (content.includes('className=')) stylingApproaches.add('className');
               if (content.includes('styled.')) stylingApproaches.add('styled-components');
               if (content.includes('style={')) stylingApproaches.add('inline-styles');
@@ -620,29 +594,24 @@ describe('Frontend Component Tests', () => {
   describe('Component Comments & Documentation', () => {
     test('Complex components have helpful comments', () => {
       try {
-        const componentDirs = [
-          'grading-folder/frontend/components',
-          'components'
-        ];
+        const componentDirs = ['grading-folder/frontend/components', 'components'];
 
         let hasComments = false;
 
         for (const dir of componentDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx')
-            );
+            const files = getAllFiles(dir).filter((f) => f.endsWith('.jsx') || f.endsWith('.tsx'));
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Check for comments
               if (content.includes('//') || content.includes('/*')) {
                 hasComments = true;
                 break;
               }
             }
-            
+
             if (hasComments) break;
           }
         }
@@ -660,11 +629,11 @@ describe('Frontend Component Tests', () => {
     try {
       if (fs.existsSync(dir)) {
         const files = fs.readdirSync(dir);
-        
-        files.forEach(file => {
+
+        files.forEach((file) => {
           const filePath = path.join(dir, file);
           const stat = fs.statSync(filePath);
-          
+
           if (stat.isDirectory()) {
             getAllFiles(filePath, fileList);
           } else {
@@ -675,7 +644,7 @@ describe('Frontend Component Tests', () => {
     } catch (error) {
       // Ignore errors
     }
-    
+
     return fileList;
   }
 });

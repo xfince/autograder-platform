@@ -1,6 +1,6 @@
 /**
  * tests/integration/data-flow.test.js
- * 
+ *
  * Tests for data flow validation between frontend and backend
  * Evaluates: Criterion 6 (Front-End/Back-End Integration)
  */
@@ -21,7 +21,7 @@ describe('Data Flow Integration Tests', () => {
     total_tests: 0,
     passed: 0,
     failed: 0,
-    details: []
+    details: [],
   };
 
   beforeAll(async () => {
@@ -35,7 +35,7 @@ describe('Data Flow Integration Tests', () => {
         path.join(process.cwd(), 'server', 'index.js'),
         path.join(process.cwd(), 'server', 'server.js'),
         path.join(process.cwd(), 'backend', 'index.js'),
-        path.join(process.cwd(), 'backend', 'server.js')
+        path.join(process.cwd(), 'backend', 'server.js'),
       ];
 
       for (const appPath of possiblePaths) {
@@ -64,7 +64,7 @@ describe('Data Flow Integration Tests', () => {
       if (server && server.close) {
         await new Promise((resolve) => server.close(resolve));
       }
-      
+
       if (mongoose.connection.readyState === 1) {
         await mongoose.connection.db.dropDatabase();
         await mongoose.connection.close();
@@ -86,7 +86,7 @@ describe('Data Flow Integration Tests', () => {
     testResults.details.push({
       test: testName,
       passed,
-      error: error ? error.message : null
+      error: error ? error.message : null,
     });
   };
 
@@ -104,7 +104,7 @@ describe('Data Flow Integration Tests', () => {
           boolean: true,
           array: [1, 2, 3],
           nested: { key: 'value' },
-          date: new Date().toISOString()
+          date: new Date().toISOString(),
         };
 
         const response = await request(app)
@@ -115,7 +115,7 @@ describe('Data Flow Integration Tests', () => {
         // Should handle complex data (even if validation fails)
         expect(response.status).toBeDefined();
         expect(response.status).toBeLessThan(500); // Not a server crash
-        
+
         recordTest('Request data serialization', true);
       } catch (error) {
         recordTest('Request data serialization', false, error);
@@ -133,7 +133,7 @@ describe('Data Flow Integration Tests', () => {
         const specialData = {
           emoji: '🚀 Test Post',
           unicode: 'Héllo Wörld 你好',
-          special: "Test with 'quotes' and \"double quotes\""
+          special: 'Test with \'quotes\' and "double quotes"',
         };
 
         const response = await request(app)
@@ -163,7 +163,7 @@ describe('Data Flow Integration Tests', () => {
         expect(response.headers['content-type']).toMatch(/application\/json/);
         expect(response.body).toBeDefined();
         expect(typeof response.body).toBe('object');
-        
+
         recordTest('Response JSON formatting', true);
       } catch (error) {
         recordTest('Response JSON formatting', false, error);
@@ -184,10 +184,12 @@ describe('Data Flow Integration Tests', () => {
         for (const endpoint of endpoints) {
           try {
             const response = await request(app).get(endpoint);
-            
+
             if (response.status === 200 && response.body) {
-              if (Array.isArray(response.body) || 
-                  (response.body.data && Array.isArray(response.body.data))) {
+              if (
+                Array.isArray(response.body) ||
+                (response.body.data && Array.isArray(response.body.data))
+              ) {
                 hasArrayResponse = true;
                 break;
               }
@@ -220,11 +222,9 @@ describe('Data Flow Integration Tests', () => {
 
         if (createResponse.status === 200 || createResponse.status === 201) {
           const resource = createResponse.body;
-          
+
           // Check for common fields
-          const hasExpectedFields = resource && (
-            resource.id || resource._id || resource.title
-          );
+          const hasExpectedFields = resource && (resource.id || resource._id || resource.title);
 
           expect(hasExpectedFields).toBe(true);
           recordTest('Object response fields', true);
@@ -247,7 +247,7 @@ describe('Data Flow Integration Tests', () => {
 
       try {
         const uniqueTitle = `Persistent Post ${Date.now()}`;
-        
+
         // Create a post
         const createResponse = await request(app)
           .post('/api/posts')
@@ -258,17 +258,18 @@ describe('Data Flow Integration Tests', () => {
           const resourceId = createResponse.body?.id || createResponse.body?._id;
 
           // Wait a moment
-          await new Promise(resolve => setTimeout(resolve, 500));
+          await new Promise((resolve) => setTimeout(resolve, 500));
 
           // Retrieve all posts
           const getResponse = await request(app).get('/api/posts');
 
           if (getResponse.status === 200) {
-            const posts = Array.isArray(getResponse.body) ? 
-              getResponse.body : getResponse.body.data || [];
-            
-            const foundPost = posts.find(p => 
-              p.title === uniqueTitle || p._id === resourceId || p.id === resourceId
+            const posts = Array.isArray(getResponse.body)
+              ? getResponse.body
+              : getResponse.body.data || [];
+
+            const foundPost = posts.find(
+              (p) => p.title === uniqueTitle || p._id === resourceId || p.id === resourceId,
             );
 
             expect(foundPost).toBeTruthy();
@@ -382,7 +383,7 @@ describe('Data Flow Integration Tests', () => {
         const testData = {
           title: 'Consistency Test',
           content: 'Test content',
-          tags: ['test', 'consistency']
+          tags: ['test', 'consistency'],
         };
 
         // Create
@@ -403,7 +404,7 @@ describe('Data Flow Integration Tests', () => {
               const retrievedResource = getResponse.body;
 
               // Check if key fields are consistent
-              const isConsistent = 
+              const isConsistent =
                 retrievedResource.title === testData.title &&
                 retrievedResource.content === testData.content;
 
@@ -440,18 +441,20 @@ describe('Data Flow Integration Tests', () => {
           const resource = createResponse.body;
 
           // Check for timestamp fields
-          const hasTimestamps = resource && (
-            resource.createdAt || resource.created_at ||
-            resource.updatedAt || resource.updated_at ||
-            resource.timestamp
-          );
+          const hasTimestamps =
+            resource &&
+            (resource.createdAt ||
+              resource.created_at ||
+              resource.updatedAt ||
+              resource.updated_at ||
+              resource.timestamp);
 
           // Timestamps are good practice but not required
           recordTest('Timestamp maintenance', Boolean(hasTimestamps));
         } else {
           recordTest('Timestamp maintenance', false);
         }
-        
+
         expect(true).toBe(true);
       } catch (error) {
         recordTest('Timestamp maintenance', false, error);
@@ -474,15 +477,15 @@ describe('Data Flow Integration Tests', () => {
             request(app)
               .post('/api/posts')
               .send({ title: `Concurrent ${i}`, content: `Content ${i}` })
-              .set('Content-Type', 'application/json')
+              .set('Content-Type', 'application/json'),
           );
         }
 
         const responses = await Promise.all(requests);
 
         // All should complete (even if some fail validation)
-        const allCompleted = responses.every(r => r.status !== undefined);
-        
+        const allCompleted = responses.every((r) => r.status !== undefined);
+
         expect(allCompleted).toBe(true);
         recordTest('Concurrent request handling', true);
       } catch (error) {
@@ -498,9 +501,7 @@ describe('Data Flow Integration Tests', () => {
       }
 
       try {
-        const response = await request(app)
-          .get('/api/users')
-          .timeout(10000); // 10 second timeout
+        const response = await request(app).get('/api/users').timeout(10000); // 10 second timeout
 
         expect(response).toBeDefined();
         recordTest('Long operation handling', true);
@@ -524,7 +525,7 @@ describe('Data Flow Integration Tests', () => {
       try {
         const invalidData = {
           email: 'not-an-email', // Invalid email format
-          password: '123' // Too short
+          password: '123', // Too short
         };
 
         const response = await request(app)
@@ -535,7 +536,7 @@ describe('Data Flow Integration Tests', () => {
         // Should return 400-level error
         expect(response.status).toBeGreaterThanOrEqual(400);
         expect(response.status).toBeLessThan(500);
-        
+
         recordTest('Pre-insertion validation', true);
       } catch (error) {
         recordTest('Pre-insertion validation', false, error);
@@ -556,9 +557,9 @@ describe('Data Flow Integration Tests', () => {
           .set('Content-Type', 'application/json');
 
         if (response.status >= 400 && response.status < 500) {
-          const hasMessage = response.body && 
-            (response.body.error || response.body.message || response.body.errors);
-          
+          const hasMessage =
+            response.body && (response.body.error || response.body.message || response.body.errors);
+
           expect(hasMessage).toBe(true);
           recordTest('Validation feedback quality', true);
         } else {

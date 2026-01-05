@@ -1,6 +1,6 @@
 /**
  * tests/backend/error-handling.test.js
- * 
+ *
  * Tests for error handling and edge cases
  * Evaluates: Criterion 3 (Back-End Architecture) & Criterion 13 (Security)
  */
@@ -20,7 +20,7 @@ describe('Error Handling Tests', () => {
     total_tests: 0,
     passed: 0,
     failed: 0,
-    details: []
+    details: [],
   };
 
   beforeAll(async () => {
@@ -35,7 +35,7 @@ describe('Error Handling Tests', () => {
         path.join(process.cwd(), 'server', 'index.js'),
         path.join(process.cwd(), 'server', 'server.js'),
         path.join(process.cwd(), 'backend', 'index.js'),
-        path.join(process.cwd(), 'backend', 'server.js')
+        path.join(process.cwd(), 'backend', 'server.js'),
       ];
 
       for (const appPath of possiblePaths) {
@@ -66,7 +66,7 @@ describe('Error Handling Tests', () => {
       if (server && server.close) {
         await new Promise((resolve) => server.close(resolve));
       }
-      
+
       if (mongoose.connection.readyState === 1) {
         await mongoose.connection.close();
       }
@@ -87,7 +87,7 @@ describe('Error Handling Tests', () => {
     testResults.details.push({
       test: testName,
       passed,
-      error: error ? error.message : null
+      error: error ? error.message : null,
     });
   };
 
@@ -100,7 +100,7 @@ describe('Error Handling Tests', () => {
 
       try {
         const response = await request(app).get('/api/this-route-does-not-exist-at-all');
-        
+
         expect(response.status).toBe(404);
         recordTest('404 handling', true);
       } catch (error) {
@@ -117,11 +117,11 @@ describe('Error Handling Tests', () => {
 
       try {
         const response = await request(app).get('/api/nonexistent-endpoint');
-        
+
         if (response.status === 404) {
-          const hasMessage = response.body && 
-            (response.body.error || response.body.message || response.body.msg);
-          
+          const hasMessage =
+            response.body && (response.body.error || response.body.message || response.body.msg);
+
           expect(hasMessage).toBe(true);
           recordTest('404 error message', true);
         } else {
@@ -201,18 +201,14 @@ describe('Error Handling Tests', () => {
       }
 
       try {
-        const protectedEndpoints = [
-          '/api/users/me',
-          '/api/profile',
-          '/api/dashboard'
-        ];
+        const protectedEndpoints = ['/api/users/me', '/api/profile', '/api/dashboard'];
 
         let returns401 = false;
 
         for (const endpoint of protectedEndpoints) {
           try {
             const response = await request(app).get(endpoint);
-            
+
             if (response.status === 401 || response.status === 403) {
               returns401 = true;
               break;
@@ -278,7 +274,7 @@ describe('Error Handling Tests', () => {
         // Should handle gracefully (not crash) - return 400 or 404
         expect(response.status).toBeDefined();
         expect(response.status).not.toBe(500);
-        
+
         recordTest('Database error handling', true);
       } catch (error) {
         // If it throws, server might have crashed - that's bad
@@ -322,7 +318,7 @@ describe('Error Handling Tests', () => {
       try {
         // Trigger different types of errors
         const errors = [];
-        
+
         // 404 error
         const error404 = await request(app).get('/api/nonexistent');
         errors.push(error404);
@@ -345,15 +341,15 @@ describe('Error Handling Tests', () => {
         for (const error of errors) {
           if (error.status >= 400 && error.body) {
             const fields = Object.keys(error.body);
-            
+
             if (commonFields === null) {
               commonFields = fields;
             } else {
               // Check if similar fields exist
-              const hasCommonPattern = 
+              const hasCommonPattern =
                 (fields.includes('error') || fields.includes('message')) &&
                 (commonFields.includes('error') || commonFields.includes('message'));
-              
+
               if (!hasCommonPattern) {
                 consistentStructure = false;
                 break;
@@ -381,9 +377,8 @@ describe('Error Handling Tests', () => {
 
         if (response.status >= 400) {
           // Check if body includes status or statusCode
-          const hasStatus = response.body && 
-            (response.body.status || response.body.statusCode);
-          
+          const hasStatus = response.body && (response.body.status || response.body.statusCode);
+
           // This is good practice but not required
           recordTest('Error status in body', Boolean(hasStatus));
         } else {
@@ -411,9 +406,7 @@ describe('Error Handling Tests', () => {
 
         for (const endpoint of endpoints) {
           try {
-            const response = await request(app)
-              .get(endpoint)
-              .timeout(5000);
+            const response = await request(app).get(endpoint).timeout(5000);
 
             // If we get a response (not timeout), async errors are handled
             if (!response) {
@@ -452,17 +445,15 @@ describe('Error Handling Tests', () => {
 
         if (response.status >= 400 && response.status < 500) {
           // Check if error message is helpful (not generic)
-          const message = 
-            response.body?.error || 
-            response.body?.message || 
-            response.body?.msg ||
-            '';
+          const message =
+            response.body?.error || response.body?.message || response.body?.msg || '';
 
-          const isHelpful = message.length > 5 && 
+          const isHelpful =
+            message.length > 5 &&
             (message.toLowerCase().includes('email') ||
-             message.toLowerCase().includes('required') ||
-             message.toLowerCase().includes('invalid') ||
-             message.toLowerCase().includes('validation'));
+              message.toLowerCase().includes('required') ||
+              message.toLowerCase().includes('invalid') ||
+              message.toLowerCase().includes('validation'));
 
           recordTest('Validation error messages', isHelpful);
         } else {
@@ -481,17 +472,18 @@ describe('Error Handling Tests', () => {
       // This is hard to test directly, but we can check if logging packages exist
       try {
         const fs = require('fs');
-        const packageJsonPath = path.join(process.cwd(), 'grading-folder', 'backend', 'package.json') ||
-                                path.join(process.cwd(), 'package.json');
-        
+        const packageJsonPath =
+          path.join(process.cwd(), 'grading-folder', 'backend', 'package.json') ||
+          path.join(process.cwd(), 'package.json');
+
         if (fs.existsSync(packageJsonPath)) {
           const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
           const dependencies = {
             ...packageJson.dependencies,
-            ...packageJson.devDependencies
+            ...packageJson.devDependencies,
           };
 
-          const hasLogging = 
+          const hasLogging =
             dependencies.winston ||
             dependencies.morgan ||
             dependencies.pino ||
@@ -519,7 +511,7 @@ describe('Error Handling Tests', () => {
       try {
         // Create a large payload (but not too large to crash the test)
         const largeData = {
-          data: 'x'.repeat(1000000) // 1MB of data
+          data: 'x'.repeat(1000000), // 1MB of data
         };
 
         const response = await request(app)
@@ -545,7 +537,7 @@ describe('Error Handling Tests', () => {
       try {
         const specialChars = {
           name: "<script>alert('xss')</script>",
-          email: "test'; DROP TABLE users; --@example.com"
+          email: "test'; DROP TABLE users; --@example.com",
         };
 
         const response = await request(app)

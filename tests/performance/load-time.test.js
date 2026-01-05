@@ -1,6 +1,6 @@
 /**
  * tests/performance/load-time.test.js & query-efficiency.test.js (Combined)
- * 
+ *
  * Tests for application performance and optimization
  * Evaluates: Criterion 14 (Performance & Optimization)
  */
@@ -21,7 +21,7 @@ describe('Performance & Optimization Tests', () => {
     passed: 0,
     failed: 0,
     details: [],
-    performance_metrics: {}
+    performance_metrics: {},
   };
 
   beforeAll(async () => {
@@ -30,7 +30,7 @@ describe('Performance & Optimization Tests', () => {
         path.join(process.cwd(), 'server', 'index.js'),
         path.join(process.cwd(), 'server', 'server.js'),
         path.join(process.cwd(), 'backend', 'index.js'),
-        path.join(process.cwd(), 'backend', 'server.js')
+        path.join(process.cwd(), 'backend', 'server.js'),
       ];
 
       for (const appPath of possiblePaths) {
@@ -62,7 +62,7 @@ describe('Performance & Optimization Tests', () => {
       if (server && server.close) {
         await new Promise((resolve) => server.close(resolve));
       }
-      
+
       if (mongoose.connection.readyState === 1) {
         await mongoose.connection.db.dropDatabase();
         await mongoose.connection.close();
@@ -85,7 +85,7 @@ describe('Performance & Optimization Tests', () => {
       test: testName,
       passed,
       error: error ? error.message : null,
-      metrics
+      metrics,
     });
   };
 
@@ -93,11 +93,11 @@ describe('Performance & Optimization Tests', () => {
   async function seedTestData() {
     try {
       const collections = await mongoose.connection.db.listCollections().toArray();
-      const userCollection = collections.find(c => c.name.toLowerCase().includes('user'));
-      
+      const userCollection = collections.find((c) => c.name.toLowerCase().includes('user'));
+
       if (userCollection) {
         const collection = mongoose.connection.db.collection(userCollection.name);
-        
+
         // Create 50 test users for performance testing
         const users = [];
         for (let i = 0; i < 50; i++) {
@@ -105,10 +105,10 @@ describe('Performance & Optimization Tests', () => {
             name: `User ${i}`,
             email: `user${i}@performance.test`,
             password: 'hashedpassword123',
-            createdAt: new Date()
+            createdAt: new Date(),
           });
         }
-        
+
         await collection.insertMany(users);
       }
     } catch (error) {
@@ -172,7 +172,7 @@ describe('Performance & Optimization Tests', () => {
 
       try {
         const startTime = Date.now();
-        
+
         // Make 10 concurrent requests
         const requests = [];
         for (let i = 0; i < 10; i++) {
@@ -225,7 +225,7 @@ describe('Performance & Optimization Tests', () => {
 
       try {
         const models = Object.values(mongoose.models);
-        
+
         if (models.length === 0) {
           recordTest('Index usage', false, new Error('No models found'));
           return;
@@ -287,14 +287,14 @@ describe('Performance & Optimization Tests', () => {
         const responses = [
           await request(app).get('/api/users?limit=10'),
           await request(app).get('/api/users?page=1&limit=10'),
-          await request(app).get('/api/users?skip=0&limit=10')
+          await request(app).get('/api/users?skip=0&limit=10'),
         ];
 
         let hasPagination = false;
         for (const response of responses) {
           if (response.status === 200 && response.body) {
             const data = Array.isArray(response.body) ? response.body : response.body.data;
-            
+
             // If result is limited to ~10 items, pagination is working
             if (data && data.length <= 15) {
               hasPagination = true;
@@ -318,7 +318,7 @@ describe('Performance & Optimization Tests', () => {
           process.env.MONGODB_URI ||
           process.env.DATABASE_URL ||
           process.env.JWT_SECRET ||
-          process.env.PORT
+          process.env.PORT,
         );
 
         expect(hasEnvVars).toBe(true);
@@ -334,7 +334,7 @@ describe('Performance & Optimization Tests', () => {
         const frontendFiles = [
           'grading-folder/frontend/components',
           'grading-folder/frontend/pages',
-          'grading-folder/frontend/app'
+          'grading-folder/frontend/app',
         ];
 
         let usesImageOptimization = false;
@@ -342,11 +342,11 @@ describe('Performance & Optimization Tests', () => {
         for (const dir of frontendFiles) {
           if (fs.existsSync(dir)) {
             const files = getAllFiles(dir);
-            
+
             for (const file of files) {
               if (file.endsWith('.tsx') || file.endsWith('.jsx')) {
                 const content = fs.readFileSync(file, 'utf8');
-                
+
                 // Check for Next.js Image component
                 if (content.includes('next/image') || content.includes('<Image')) {
                   usesImageOptimization = true;
@@ -355,7 +355,7 @@ describe('Performance & Optimization Tests', () => {
               }
             }
           }
-          
+
           if (usesImageOptimization) break;
         }
 
@@ -371,7 +371,7 @@ describe('Performance & Optimization Tests', () => {
       try {
         const frontendFiles = [
           'grading-folder/frontend/components',
-          'grading-folder/frontend/pages'
+          'grading-folder/frontend/pages',
         ];
 
         let usesMemoization = false;
@@ -379,22 +379,24 @@ describe('Performance & Optimization Tests', () => {
         for (const dir of frontendFiles) {
           if (fs.existsSync(dir)) {
             const files = getAllFiles(dir);
-            
+
             for (const file of files) {
               if (file.endsWith('.tsx') || file.endsWith('.jsx')) {
                 const content = fs.readFileSync(file, 'utf8');
-                
+
                 // Check for React memoization
-                if (content.includes('useMemo') || 
-                    content.includes('useCallback') || 
-                    content.includes('React.memo')) {
+                if (
+                  content.includes('useMemo') ||
+                  content.includes('useCallback') ||
+                  content.includes('React.memo')
+                ) {
                   usesMemoization = true;
                   break;
                 }
               }
             }
           }
-          
+
           if (usesMemoization) break;
         }
 
@@ -411,7 +413,7 @@ describe('Performance & Optimization Tests', () => {
         const frontendFiles = [
           'grading-folder/frontend/components',
           'grading-folder/frontend/pages',
-          'grading-folder/frontend/app'
+          'grading-folder/frontend/app',
         ];
 
         let usesLazyLoading = false;
@@ -419,22 +421,24 @@ describe('Performance & Optimization Tests', () => {
         for (const dir of frontendFiles) {
           if (fs.existsSync(dir)) {
             const files = getAllFiles(dir);
-            
+
             for (const file of files) {
               if (file.endsWith('.tsx') || file.endsWith('.jsx')) {
                 const content = fs.readFileSync(file, 'utf8');
-                
+
                 // Check for lazy loading
-                if (content.includes('React.lazy') || 
-                    content.includes('dynamic(') ||
-                    content.includes('loadable(')) {
+                if (
+                  content.includes('React.lazy') ||
+                  content.includes('dynamic(') ||
+                  content.includes('loadable(')
+                ) {
                   usesLazyLoading = true;
                   break;
                 }
               }
             }
           }
-          
+
           if (usesLazyLoading) break;
         }
 
@@ -486,12 +490,7 @@ describe('Performance & Optimization Tests', () => {
   describe('Bundle Size Optimization', () => {
     test('Frontend build is optimized (checking for production build)', () => {
       try {
-        const buildDirs = [
-          '.next',
-          'out',
-          'build',
-          'dist'
-        ];
+        const buildDirs = ['.next', 'out', 'build', 'dist'];
 
         let hasProductionBuild = false;
 
@@ -514,15 +513,15 @@ describe('Performance & Optimization Tests', () => {
   // Helper function to recursively get all files
   function getAllFiles(dir) {
     const files = [];
-    
+
     try {
       if (fs.existsSync(dir)) {
         const items = fs.readdirSync(dir);
-        
+
         for (const item of items) {
           const fullPath = path.join(dir, item);
           const stat = fs.statSync(fullPath);
-          
+
           if (stat.isDirectory()) {
             files.push(...getAllFiles(fullPath));
           } else {
@@ -533,7 +532,7 @@ describe('Performance & Optimization Tests', () => {
     } catch (error) {
       // Ignore errors
     }
-    
+
     return files;
   }
 });

@@ -1,6 +1,6 @@
 /**
  * tests/frontend/routing.test.js
- * 
+ *
  * Tests for Next.js routing implementation
  * Evaluates: Criterion 2 (Front-End Implementation)
  */
@@ -18,7 +18,7 @@ describe('Next.js Routing Tests', () => {
     passed: 0,
     failed: 0,
     details: [],
-    routing_info: {}
+    routing_info: {},
   };
 
   const recordTest = (testName, passed, error = null) => {
@@ -31,7 +31,7 @@ describe('Next.js Routing Tests', () => {
     testResults.details.push({
       test: testName,
       passed,
-      error: error ? error.message : null
+      error: error ? error.message : null,
     });
   };
 
@@ -42,7 +42,12 @@ describe('Next.js Routing Tests', () => {
   describe('Next.js Project Structure', () => {
     test('Project uses Next.js framework', () => {
       try {
-        let packageJsonPath = path.join(process.cwd(), 'grading-folder', 'frontend', 'package.json');
+        let packageJsonPath = path.join(
+          process.cwd(),
+          'grading-folder',
+          'frontend',
+          'package.json',
+        );
         if (!fs.existsSync(packageJsonPath)) {
           packageJsonPath = path.join(process.cwd(), 'package.json');
         }
@@ -52,11 +57,11 @@ describe('Next.js Routing Tests', () => {
           const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
           const deps = {
             ...packageJson.dependencies,
-            ...packageJson.devDependencies
+            ...packageJson.devDependencies,
           };
 
           usesNext = Boolean(deps.next);
-          
+
           testResults.routing_info.next_version = deps.next || 'not found';
         }
 
@@ -70,12 +75,7 @@ describe('Next.js Routing Tests', () => {
 
     test('Project has pages or app directory for routing', () => {
       try {
-        const routingDirs = [
-          'pages',
-          'src/pages',
-          'app',
-          'src/app'
-        ];
+        const routingDirs = ['pages', 'src/pages', 'app', 'src/app'];
 
         let hasRoutingDir = false;
         let routingType = null;
@@ -102,32 +102,26 @@ describe('Next.js Routing Tests', () => {
   describe('Page Routes', () => {
     test('Project has multiple page routes', () => {
       try {
-        const routingDirs = [
-          'pages',
-          'src/pages',
-          'app',
-          'src/app'
-        ];
+        const routingDirs = ['pages', 'src/pages', 'app', 'src/app'];
 
         let pageFiles = [];
 
         for (const dir of routingDirs) {
           if (fs.existsSync(dir)) {
-            pageFiles = getAllFiles(dir).filter(f => 
-              (f.endsWith('.jsx') || 
-               f.endsWith('.tsx') || 
-               f.endsWith('.js')) &&
-              !f.includes('_app') &&
-              !f.includes('_document') &&
-              !f.includes('.test.') &&
-              !f.includes('.spec.')
+            pageFiles = getAllFiles(dir).filter(
+              (f) =>
+                (f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js')) &&
+                !f.includes('_app') &&
+                !f.includes('_document') &&
+                !f.includes('.test.') &&
+                !f.includes('.spec.'),
             );
             break;
           }
         }
 
         testResults.routing_info.page_count = pageFiles.length;
-        testResults.routing_info.pages = pageFiles.map(f => path.basename(f));
+        testResults.routing_info.pages = pageFiles.map((f) => path.basename(f));
 
         const hasMultiplePages = pageFiles.length >= 2;
 
@@ -153,7 +147,7 @@ describe('Next.js Routing Tests', () => {
           'app/page.js',
           'src/app/page.jsx',
           'src/app/page.tsx',
-          'src/app/page.js'
+          'src/app/page.js',
         ];
 
         let hasHomePage = false;
@@ -176,31 +170,27 @@ describe('Next.js Routing Tests', () => {
 
     test('Pages export default components', () => {
       try {
-        const routingDirs = [
-          'pages',
-          'src/pages',
-          'app',
-          'src/app'
-        ];
+        const routingDirs = ['pages', 'src/pages', 'app', 'src/app'];
 
         let hasDefaultExports = false;
 
         for (const dir of routingDirs) {
           if (fs.existsSync(dir)) {
-            const pageFiles = getAllFiles(dir).filter(f => 
-              (f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js')) &&
-              (f.includes('/page.') || f.includes('/index.') || path.dirname(f) === dir)
+            const pageFiles = getAllFiles(dir).filter(
+              (f) =>
+                (f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js')) &&
+                (f.includes('/page.') || f.includes('/index.') || path.dirname(f) === dir),
             );
 
             for (const file of pageFiles) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               if (content.includes('export default')) {
                 hasDefaultExports = true;
                 break;
               }
             }
-            
+
             if (hasDefaultExports) break;
           }
         }
@@ -217,12 +207,7 @@ describe('Next.js Routing Tests', () => {
   describe('Dynamic Routes', () => {
     test('Project uses dynamic routes (if applicable)', () => {
       try {
-        const routingDirs = [
-          'pages',
-          'src/pages',
-          'app',
-          'src/app'
-        ];
+        const routingDirs = ['pages', 'src/pages', 'app', 'src/app'];
 
         let hasDynamicRoutes = false;
         let dynamicRoutes = [];
@@ -230,9 +215,9 @@ describe('Next.js Routing Tests', () => {
         for (const dir of routingDirs) {
           if (fs.existsSync(dir)) {
             const allFiles = getAllFiles(dir);
-            
+
             // Look for dynamic route patterns
-            dynamicRoutes = allFiles.filter(f => {
+            dynamicRoutes = allFiles.filter((f) => {
               const basename = path.basename(f);
               return basename.includes('[') && basename.includes(']');
             });
@@ -247,7 +232,7 @@ describe('Next.js Routing Tests', () => {
         testResults.routing_info.dynamic_routes = {
           used: hasDynamicRoutes,
           count: dynamicRoutes.length,
-          routes: dynamicRoutes.map(f => path.basename(f))
+          routes: dynamicRoutes.map((f) => path.basename(f)),
         };
 
         // Dynamic routes are advanced but not required
@@ -260,33 +245,30 @@ describe('Next.js Routing Tests', () => {
 
     test('Dynamic route parameters are accessed correctly', () => {
       try {
-        const routingDirs = [
-          'pages',
-          'src/pages',
-          'app',
-          'src/app'
-        ];
+        const routingDirs = ['pages', 'src/pages', 'app', 'src/app'];
 
         let usesRouteParams = false;
 
         for (const dir of routingDirs) {
           if (fs.existsSync(dir)) {
-            const dynamicFiles = getAllFiles(dir).filter(f => 
-              path.basename(f).includes('[') && path.basename(f).includes(']')
+            const dynamicFiles = getAllFiles(dir).filter(
+              (f) => path.basename(f).includes('[') && path.basename(f).includes(']'),
             );
 
             for (const file of dynamicFiles) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Check for useRouter or params usage
-              if (content.includes('useRouter') || 
-                  content.includes('router.query') ||
-                  content.includes('params.')) {
+              if (
+                content.includes('useRouter') ||
+                content.includes('router.query') ||
+                content.includes('params.')
+              ) {
                 usesRouteParams = true;
                 break;
               }
             }
-            
+
             if (usesRouteParams) break;
           }
         }
@@ -307,7 +289,7 @@ describe('Next.js Routing Tests', () => {
           'grading-folder/frontend/pages',
           'components',
           'pages',
-          'app'
+          'app',
         ];
 
         let usesLink = false;
@@ -315,16 +297,18 @@ describe('Next.js Routing Tests', () => {
 
         for (const dir of allDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js')
+            const files = getAllFiles(dir).filter(
+              (f) => f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js'),
             );
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Check for Link usage
-              if ((content.includes("from 'next/link'") || content.includes('from "next/link"')) &&
-                  content.includes('<Link')) {
+              if (
+                (content.includes("from 'next/link'") || content.includes('from "next/link"')) &&
+                content.includes('<Link')
+              ) {
                 usesLink = true;
                 linkUsageCount++;
               }
@@ -334,7 +318,7 @@ describe('Next.js Routing Tests', () => {
 
         testResults.routing_info.link_usage = {
           used: usesLink,
-          files_count: linkUsageCount
+          files_count: linkUsageCount,
         };
 
         expect(usesLink).toBe(true);
@@ -352,31 +336,33 @@ describe('Next.js Routing Tests', () => {
           'grading-folder/frontend/pages',
           'components',
           'pages',
-          'app'
+          'app',
         ];
 
         let usesRouter = false;
 
         for (const dir of allDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js')
+            const files = getAllFiles(dir).filter(
+              (f) => f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js'),
             );
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Check for useRouter usage
-              if (content.includes('useRouter') &&
-                  (content.includes("from 'next/router'") || 
-                   content.includes('from "next/router"') ||
-                   content.includes("from 'next/navigation'") ||
-                   content.includes('from "next/navigation"'))) {
+              if (
+                content.includes('useRouter') &&
+                (content.includes("from 'next/router'") ||
+                  content.includes('from "next/router"') ||
+                  content.includes("from 'next/navigation'") ||
+                  content.includes('from "next/navigation"'))
+              ) {
                 usesRouter = true;
                 break;
               }
             }
-            
+
             if (usesRouter) break;
           }
         }
@@ -395,27 +381,22 @@ describe('Next.js Routing Tests', () => {
   describe('Nested Routes', () => {
     test('Project has nested route structure (if applicable)', () => {
       try {
-        const routingDirs = [
-          'pages',
-          'src/pages',
-          'app',
-          'src/app'
-        ];
+        const routingDirs = ['pages', 'src/pages', 'app', 'src/app'];
 
         let hasNestedRoutes = false;
         let nestedDepth = 0;
 
         for (const dir of routingDirs) {
           if (fs.existsSync(dir)) {
-            const allFiles = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js')
+            const allFiles = getAllFiles(dir).filter(
+              (f) => f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js'),
             );
 
             // Check nesting depth
             for (const file of allFiles) {
               const relativePath = path.relative(dir, file);
               const depth = relativePath.split(path.sep).length - 1;
-              
+
               if (depth >= 2) {
                 hasNestedRoutes = true;
                 nestedDepth = Math.max(nestedDepth, depth);
@@ -426,7 +407,7 @@ describe('Next.js Routing Tests', () => {
 
         testResults.routing_info.nested_routes = {
           used: hasNestedRoutes,
-          max_depth: nestedDepth
+          max_depth: nestedDepth,
         };
 
         // Nested routes show good organization
@@ -447,7 +428,7 @@ describe('Next.js Routing Tests', () => {
           'pages/_app.js',
           'src/pages/_app.jsx',
           'src/pages/_app.tsx',
-          'src/pages/_app.js'
+          'src/pages/_app.js',
         ];
 
         let hasAppFile = false;
@@ -476,7 +457,7 @@ describe('Next.js Routing Tests', () => {
           'app/layout.js',
           'src/app/layout.jsx',
           'src/app/layout.tsx',
-          'src/app/layout.js'
+          'src/app/layout.js',
         ];
 
         let hasLayoutFile = false;
@@ -505,7 +486,7 @@ describe('Next.js Routing Tests', () => {
           'pages/_app.js',
           'app/layout.jsx',
           'app/layout.tsx',
-          'app/layout.js'
+          'app/layout.js',
         ];
 
         let layoutWrapsContent = false;
@@ -513,11 +494,13 @@ describe('Next.js Routing Tests', () => {
         for (const layoutPath of layoutPaths) {
           if (fs.existsSync(layoutPath)) {
             const content = fs.readFileSync(layoutPath, 'utf8');
-            
+
             // Check if layout wraps children
-            if (content.includes('children') || 
-                content.includes('Component') ||
-                content.includes('pageProps')) {
+            if (
+              content.includes('children') ||
+              content.includes('Component') ||
+              content.includes('pageProps')
+            ) {
               layoutWrapsContent = true;
               break;
             }
@@ -535,21 +518,15 @@ describe('Next.js Routing Tests', () => {
   describe('API Routes (if applicable)', () => {
     test('Project has API routes in pages/api (if applicable)', () => {
       try {
-        const apiDirs = [
-          'pages/api',
-          'src/pages/api',
-          'app/api'
-        ];
+        const apiDirs = ['pages/api', 'src/pages/api', 'app/api'];
 
         let hasApiRoutes = false;
         let apiRouteCount = 0;
 
         for (const dir of apiDirs) {
           if (fs.existsSync(dir)) {
-            const apiFiles = getAllFiles(dir).filter(f => 
-              f.endsWith('.js') || f.endsWith('.ts')
-            );
-            
+            const apiFiles = getAllFiles(dir).filter((f) => f.endsWith('.js') || f.endsWith('.ts'));
+
             if (apiFiles.length > 0) {
               hasApiRoutes = true;
               apiRouteCount = apiFiles.length;
@@ -560,7 +537,7 @@ describe('Next.js Routing Tests', () => {
 
         testResults.routing_info.api_routes = {
           used: hasApiRoutes,
-          count: apiRouteCount
+          count: apiRouteCount,
         };
 
         // API routes in Next.js are optional (backend might be separate)
@@ -575,35 +552,32 @@ describe('Next.js Routing Tests', () => {
   describe('Route Protection', () => {
     test('Protected routes have authentication checks', () => {
       try {
-        const allDirs = [
-          'pages',
-          'src/pages',
-          'app',
-          'components'
-        ];
+        const allDirs = ['pages', 'src/pages', 'app', 'components'];
 
         let hasRouteProtection = false;
 
         for (const dir of allDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js')
+            const files = getAllFiles(dir).filter(
+              (f) => f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js'),
             );
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Look for auth checks
-              if ((content.includes('useAuth') || 
-                   content.includes('isAuthenticated') ||
-                   content.includes('getServerSideProps') ||
-                   content.includes('middleware')) &&
-                  (content.includes('redirect') || content.includes('push('))) {
+              if (
+                (content.includes('useAuth') ||
+                  content.includes('isAuthenticated') ||
+                  content.includes('getServerSideProps') ||
+                  content.includes('middleware')) &&
+                (content.includes('redirect') || content.includes('push('))
+              ) {
                 hasRouteProtection = true;
                 break;
               }
             }
-            
+
             if (hasRouteProtection) break;
           }
         }
@@ -619,37 +593,35 @@ describe('Next.js Routing Tests', () => {
   describe('Metadata & SEO', () => {
     test('Pages include Head component for metadata', () => {
       try {
-        const routingDirs = [
-          'pages',
-          'src/pages',
-          'app'
-        ];
+        const routingDirs = ['pages', 'src/pages', 'app'];
 
         let usesHead = false;
 
         for (const dir of routingDirs) {
           if (fs.existsSync(dir)) {
-            const files = getAllFiles(dir).filter(f => 
-              f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js')
+            const files = getAllFiles(dir).filter(
+              (f) => f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js'),
             );
 
             for (const file of files) {
               const content = fs.readFileSync(file, 'utf8');
-              
+
               // Check for Head or metadata usage
-              if ((content.includes("from 'next/head'") || content.includes('from "next/head"')) &&
-                  content.includes('<Head')) {
+              if (
+                (content.includes("from 'next/head'") || content.includes('from "next/head"')) &&
+                content.includes('<Head')
+              ) {
                 usesHead = true;
                 break;
               }
-              
+
               // App Router uses metadata export
               if (content.includes('export const metadata')) {
                 usesHead = true;
                 break;
               }
             }
-            
+
             if (usesHead) break;
           }
         }
@@ -667,11 +639,11 @@ describe('Next.js Routing Tests', () => {
     try {
       if (fs.existsSync(dir)) {
         const files = fs.readdirSync(dir);
-        
-        files.forEach(file => {
+
+        files.forEach((file) => {
           const filePath = path.join(dir, file);
           const stat = fs.statSync(filePath);
-          
+
           if (stat.isDirectory()) {
             getAllFiles(filePath, fileList);
           } else {
@@ -682,7 +654,7 @@ describe('Next.js Routing Tests', () => {
     } catch (error) {
       // Ignore errors
     }
-    
+
     return fileList;
   }
 });

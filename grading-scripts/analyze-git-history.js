@@ -1,6 +1,6 @@
 /**
  * grading-scripts/analyze-git-history.js
- * 
+ *
  * Analyzes Git commit history and provides metrics for Criterion 10
  */
 
@@ -9,9 +9,9 @@ const fs = require('fs');
 
 function runGitCommand(command) {
   try {
-    return execSync(command, { 
+    return execSync(command, {
       encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'pipe']
+      stdio: ['pipe', 'pipe', 'pipe'],
     }).trim();
   } catch (error) {
     return null;
@@ -33,19 +33,19 @@ function analyzeGitHistory() {
     commit_message_quality: {
       meaningful: 0,
       vague: 0,
-      total: 0
+      total: 0,
     },
     large_commits: 0,
     branches: {
       total: 0,
-      non_main: 0
+      non_main: 0,
     },
     merge_commits: 0,
     first_commit_message: '',
     last_commit_message: '',
     commit_timeline: [],
     score_recommendation: 0,
-    justification: ''
+    justification: '',
   };
 
   // Check if Git repo
@@ -73,7 +73,7 @@ function analyzeGitHistory() {
   // Get commit dates
   const commitDates = runGitCommand('git log --format=%ad --date=short');
   if (commitDates) {
-    const dates = commitDates.split('\n').filter(d => d);
+    const dates = commitDates.split('\n').filter((d) => d);
     analysis.unique_commit_days = new Set(dates).size;
     console.error(`📅 Unique Commit Days: ${analysis.unique_commit_days}`);
   }
@@ -90,16 +90,19 @@ function analyzeGitHistory() {
   // Calculate average days between commits
   const commitTimestamps = runGitCommand('git log --format=%at');
   if (commitTimestamps) {
-    const timestamps = commitTimestamps.split('\n')
-      .filter(t => t)
-      .map(t => parseInt(t));
+    const timestamps = commitTimestamps
+      .split('\n')
+      .filter((t) => t)
+      .map((t) => parseInt(t));
 
     if (timestamps.length >= 2) {
       let totalDiff = 0;
       for (let i = 0; i < timestamps.length - 1; i++) {
         totalDiff += timestamps[i] - timestamps[i + 1];
       }
-      analysis.avg_days_between_commits = parseFloat(((totalDiff / (timestamps.length - 1)) / 86400).toFixed(2));
+      analysis.avg_days_between_commits = parseFloat(
+        (totalDiff / (timestamps.length - 1) / 86400).toFixed(2),
+      );
       console.error(`📈 Avg Days Between Commits: ${analysis.avg_days_between_commits}`);
     }
   }
@@ -120,7 +123,7 @@ function analyzeGitHistory() {
   console.error('💬 Analyzing Commit Messages...');
   const commitMessages = runGitCommand('git log --format=%s');
   if (commitMessages) {
-    const messages = commitMessages.split('\n').filter(m => m);
+    const messages = commitMessages.split('\n').filter((m) => m);
     analysis.commit_message_quality.total = messages.length;
 
     const genericPatterns = [
@@ -134,11 +137,11 @@ function analyzeGitHistory() {
       /^wip$/i,
       /^\.$/,
       /^asdf$/i,
-      /^misc$/i
+      /^misc$/i,
     ];
 
-    messages.forEach(msg => {
-      const isGeneric = genericPatterns.some(pattern => pattern.test(msg.trim()));
+    messages.forEach((msg) => {
+      const isGeneric = genericPatterns.some((pattern) => pattern.test(msg.trim()));
       if (isGeneric || msg.length < 10) {
         analysis.commit_message_quality.vague++;
       } else {
@@ -169,20 +172,20 @@ function analyzeGitHistory() {
   // Get branches
   const branches = runGitCommand('git branch -a');
   if (branches) {
-    const branchList = branches.split('\n').filter(b => b.trim());
+    const branchList = branches.split('\n').filter((b) => b.trim());
     analysis.branches.total = branchList.length;
-    analysis.branches.non_main = branchList.filter(b => 
-      !b.includes('main') && 
-      !b.includes('master') &&
-      !b.includes('HEAD')
+    analysis.branches.non_main = branchList.filter(
+      (b) => !b.includes('main') && !b.includes('master') && !b.includes('HEAD'),
     ).length;
-    console.error(`🌿 Branches: ${analysis.branches.total} (${analysis.branches.non_main} non-main)`);
+    console.error(
+      `🌿 Branches: ${analysis.branches.total} (${analysis.branches.non_main} non-main)`,
+    );
   }
 
   // Get merge commits
   const mergeCommits = runGitCommand('git log --merges --format=%s');
   if (mergeCommits) {
-    analysis.merge_commits = mergeCommits.split('\n').filter(m => m).length;
+    analysis.merge_commits = mergeCommits.split('\n').filter((m) => m).length;
     console.error(`🔀 Merge Commits: ${analysis.merge_commits}\n`);
   }
 
@@ -193,10 +196,10 @@ function analyzeGitHistory() {
   // Create commit timeline (sample)
   const timelineData = runGitCommand('git log --format="%ad|%s" --date=short -20');
   if (timelineData) {
-    const lines = timelineData.split('\n').filter(l => l);
+    const lines = timelineData.split('\n').filter((l) => l);
     const dateGroups = {};
-    
-    lines.forEach(line => {
+
+    lines.forEach((line) => {
       const [date, message] = line.split('|');
       if (!dateGroups[date]) {
         dateGroups[date] = [];
@@ -207,7 +210,7 @@ function analyzeGitHistory() {
     analysis.commit_timeline = Object.entries(dateGroups).map(([date, messages]) => ({
       date,
       commits: messages.length,
-      message_sample: messages[0]
+      message_sample: messages[0],
     }));
   }
 
@@ -245,9 +248,10 @@ function analyzeGitHistory() {
   }
 
   // Commit message quality (0.8 points)
-  const meaningfulPercentage = analysis.commit_message_quality.total > 0
-    ? (analysis.commit_message_quality.meaningful / analysis.commit_message_quality.total) * 100
-    : 0;
+  const meaningfulPercentage =
+    analysis.commit_message_quality.total > 0
+      ? (analysis.commit_message_quality.meaningful / analysis.commit_message_quality.total) * 100
+      : 0;
 
   if (meaningfulPercentage >= 70) {
     score += 0.8;
