@@ -11,12 +11,7 @@ export class AppController {
   }
 
   @Get('health')
-  getHealth() {
-    return {
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-      service: 'AutoGrader API',
-      version: '1.0.0',
-    };
+  async getHealth() {
+    return this.appService.getHealth();
   }
 }
