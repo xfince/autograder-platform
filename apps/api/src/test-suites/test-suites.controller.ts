@@ -12,6 +12,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Multer } from 'multer';
 import { TestSuitesService } from './test-suites.service';
 import {
   CreateTestSuiteDto,
@@ -82,7 +83,7 @@ export class TestSuitesController {
   async addTestFile(
     @CurrentUser() user: any,
     @Param('id') testSuiteId: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: Multer.File,
     @Body() body?: any,
   ): Promise<TestFileResponseDto> {
     if (!file) {

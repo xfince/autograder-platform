@@ -12,6 +12,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Multer } from 'multer';
 import { RubricsService } from './rubrics.service';
 import { CreateRubricWithCriteriaDto, UpdateRubricDto, RubricResponseDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -33,7 +34,7 @@ export class RubricsController {
   @Post('upload')
   @Roles(UserRole.PROFESSOR)
   @UseInterceptors(FileInterceptor('file'))
-  async uploadJson(@UploadedFile() file: Express.Multer.File): Promise<RubricResponseDto> {
+  async uploadJson(@UploadedFile() file: Multer.File): Promise<RubricResponseDto> {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
