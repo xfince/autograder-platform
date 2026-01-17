@@ -138,17 +138,44 @@ npx turbo run lint --filter=workers
 - **Cache:** AWS ElastiCache Redis
 - **Storage:** AWS S3
 
-## 🏃 Sprint 0 - Day 1 Completed
+## 🏃 Sprint 0 - Progress
 
-✅ **Phase 1:** Repository & Git Setup  
-✅ **Phase 2:** Turborepo Monorepo Initialization  
-✅ **Phase 3:** Next.js Frontend Setup  
-✅ **Phase 4:** NestJS Backend Setup  
-✅ **Phase 5:** Bull MQ Workers Setup  
-✅ **Phase 6:** Code Quality Tools (ESLint, Prettier, Husky)  
-✅ **Phase 7:** Testing & Documentation
+### Day 1: ✅ Project Initialization (Complete)
 
-See [sprint-0-day-1-work.txt](./sprint-0-day-1-work.txt) for detailed completion summary.
+✅ Repository & Git Setup  
+✅ Turborepo Monorepo Initialization  
+✅ Next.js Frontend Setup  
+✅ NestJS Backend Setup  
+✅ Bull MQ Workers Setup  
+✅ Code Quality Tools (ESLint, Prettier, Husky)  
+✅ Testing & Documentation
+
+[→ Day 1 Report](./sprint-0-day-1-work.txt)
+
+### Day 2-4: ✅ Database & Core Features (Complete)
+
+✅ Prisma ORM setup with PostgreSQL  
+✅ Complete database schema (7 models)  
+✅ Seed data (7 users, 3 courses, 6 assignments)  
+✅ 22 API endpoints implemented  
+✅ Authentication system (JWT + Passport)  
+✅ Frontend UI components (shadcn/ui)
+
+[→ Day 2 Report](./sprint-documents/sprint-0-day-2-completion-report.md)  
+[→ Day 3 Report](./sprint-documents/sprint-0-day-3-completion-report.md)  
+[→ Day 4 Report](./sprint-documents/sprint-0-day-4-completion-report.txt)
+
+### Day 5: ✅ Docker & Local Development (85% Complete)
+
+✅ Docker Compose configuration  
+✅ Multi-stage Dockerfiles (API, Workers)  
+✅ Local development environment  
+✅ Database services containerized  
+⚠️ Web containerization blocked (Turbopack issue)
+
+[→ Day 5 Report](./sprint-documents/sprint-0-day-5-completion-report.md)
+
+**Current Status**: Ready for Sprint 1 development work!
 
 ## 📋 Next Steps
 
@@ -161,7 +188,75 @@ See [sprint-0-day-1-work.txt](./sprint-0-day-1-work.txt) for detailed completion
 - [ ] Write unit and integration tests
 - [ ] Configure CI/CD pipeline
 
-## 🔧 Development Notes
+## � Docker Setup (Recommended for Development)
+
+### Quick Start with Docker
+
+```bash
+# Start database services (Postgres + Redis)
+docker-compose up -d postgres redis
+
+# Start all dev servers (API, Web, Workers)
+npm run dev
+```
+
+This hybrid approach provides:
+
+- ✅ Consistent database state across team
+- ✅ Fast hot-reload during development
+- ✅ Native debugging capabilities
+- ✅ Lower resource usage than full containerization
+
+### Available Docker Commands
+
+```bash
+# Start all services (Postgres, Redis, API, Workers)
+docker-compose up -d
+
+# Start specific services
+docker-compose up -d postgres redis
+
+# Stop all services
+docker-compose down
+
+# View logs
+docker-compose logs -f api
+docker-compose logs -f workers
+
+# Check service status
+docker-compose ps
+
+# Rebuild images
+docker-compose build api workers
+```
+
+### Docker Services
+
+| Service  | Port | Status        | Notes                                       |
+| -------- | ---- | ------------- | ------------------------------------------- |
+| postgres | 5432 | ✅ Ready      | PostgreSQL 15-alpine                        |
+| redis    | 6379 | ✅ Ready      | Redis 7-alpine                              |
+| api      | 3001 | ✅ Ready      | NestJS backend                              |
+| workers  | -    | ✅ Ready      | Background jobs                             |
+| web      | 3000 | ⚠️ Local only | Containerization blocked (see known issues) |
+
+### Environment Files for Docker
+
+Docker-specific environment files are located at:
+
+- `apps/api/.env.docker`
+- `apps/workers/.env.docker`
+- `apps/web/.env.docker`
+
+These use container hostnames (e.g., `postgres:5432` instead of `localhost:5432`).
+
+### Known Issues
+
+**⚠️ Web Container**: Next.js Turbopack workspace detection fails in Docker. Use local development for web frontend.
+
+See [sprint-0-day-5-completion-report.md](./sprint-documents/sprint-0-day-5-completion-report.md) for detailed issue documentation and future sprint plans.
+
+## �🔧 Development Notes
 
 ### Running Individual Apps
 

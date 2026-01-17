@@ -34,7 +34,7 @@ export class RubricsController {
   @Post('upload')
   @Roles(UserRole.PROFESSOR)
   @UseInterceptors(FileInterceptor('file'))
-  async uploadJson(@UploadedFile() file: Multer.File): Promise<RubricResponseDto> {
+  async uploadJson(@UploadedFile() file: Express.Multer.File): Promise<RubricResponseDto> {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }

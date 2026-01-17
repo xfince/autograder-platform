@@ -83,7 +83,7 @@ export class TestSuitesController {
   async addTestFile(
     @CurrentUser() user: any,
     @Param('id') testSuiteId: string,
-    @UploadedFile() file: Multer.File,
+    @UploadedFile() file: Express.Multer.File,
     @Body() body?: any,
   ): Promise<TestFileResponseDto> {
     if (!file) {

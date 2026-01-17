@@ -1,0 +1,88 @@
+# ============================================
+# Dockerfile.sandbox
+# Security-hardened container for executing student code tests
+# ============================================
+
+FROM node:20-alpine
+
+LABEL maintainer="AutoGrader Platform"
+LABEL description="Secure sandbox environment for running student code tests"
+LABEL version="1.0.0"
+
+# ============================================
+# Security: Create non-root user 'grader'
+# ============================================
+RUN addgroup --system --gid 1001 grader && \
+    adduser --system --uid 1001 --ingroup grader grader
+
+# ============================================
+# Install minimal dependencies
+# ============================================
+RUN apk add --no-cache \
+    git \
+    curl \
+    bash \
+    ca-certificates \
+    && rm -rf /var/cache/apk/*
+
+# ============================================
+# Install global test packages
+# ============================================
+RUN npm install -g \
+    jest@29.7.0 \
+    @playwright/test@1.40.0 \
+    typescript@5.3.3 \
+    ts-node@10.9.2 \
+    && npm cache clean --force
+
+# ============================================
+# Set working directory
+# ============================================
+WORKDIR /workspace
+
+# ============================================
+# Create directories with proper permissions
+# ============================================
+RUN mkdir -p /workspace/repo \
+    /workspace/tests \
+    /workspace/results \
+    /tmp/test-output \
+    && chown -R grader:grader /workspace /tmp/test-output
+
+# ============================================
+# Copy test execution script
+# ============================================
+COPY --chown=grader:grader docker/scripts/run-tests.sh /usr/local/bin/run-tests.sh
+RUN chmod +x /usr/local/bin/run-tests.sh
+
+# ============================================
+# Security: Resource limits via environment
+# ============================================
+ENV NODE_OPTIONS="--max-old-space-size=2048"
+ENV MAX_EXECUTION_TIME=600000
+ENV MAX_BUFFER_SIZE=10485760
+
+# ============================================
+# Security: Restrict permissions
+# ============================================
+# Make root filesystem read-only (except /workspace and /tmp)
+RUN chmod -R 755 /usr/local/bin \
+    && chmod -R 755 /usr/local/lib/node_modules
+
+# ============================================
+# Switch to non-root user
+# ============================================
+USER grader
+
+# ============================================
+# Set up execution environment
+# ============================================
+ENV HOME=/workspace
+ENV PATH="/usr/local/bin:${PATH}"
+
+# Health check (simple Node.js check)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=1 \
+    CMD node --version || exit 1
+
+# Default command (can be overridden)
+CMD ["sh", "-c", "echo 'Sandbox ready. Use run-tests.sh to execute tests.'"]

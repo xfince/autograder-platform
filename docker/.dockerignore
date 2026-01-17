@@ -1,0 +1,25 @@
+# Docker-specific ignores
+.git
+.github
+.gitignore
+
+# Documentation
+*.md
+README.md
+docs/
+documentation/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Other Dockerfiles
+Dockerfile*
+.dockerignore
+docker-compose*.yml
