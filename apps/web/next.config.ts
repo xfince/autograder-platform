@@ -5,9 +5,6 @@ const nextConfig: NextConfig = {
   // Enable experimental features for better performance
   experimental: {
     optimizePackageImports: ['lucide-react'],
-    turbopack: {
-      root: '/app',
-    },
   },
 };
 

@@ -1,5 +1,10 @@
 import Queue from 'bull';
 import { redisConnection } from './redis';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+// Load environment variables before creating queues
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 // Queue names
 export enum QueueNames {
@@ -16,7 +21,10 @@ const queueOptions = {
   redis: {
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT || '6379'),
-    password: process.env.REDIS_PASSWORD || undefined,
+    password:
+      process.env.REDIS_PASSWORD && process.env.REDIS_PASSWORD.trim() !== ''
+        ? process.env.REDIS_PASSWORD
+        : undefined,
   },
   defaultJobOptions: {
     attempts: 3,

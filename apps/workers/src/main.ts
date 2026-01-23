@@ -1,8 +1,9 @@
 import * as dotenv from 'dotenv';
 import { startWorkers } from './workers';
+import * as path from 'path';
 
-// Load environment variables
-dotenv.config();
+// Load environment variables from the correct location
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 async function bootstrap() {
   console.log('🚀 Starting AutoGrader Workers...');
