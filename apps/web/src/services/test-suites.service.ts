@@ -37,6 +37,7 @@ export interface CreateTestSuiteDto {
   parameters?: any;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateTestSuiteDto extends Partial<CreateTestSuiteDto> {}
 
 export interface UpdateTestFileDto {

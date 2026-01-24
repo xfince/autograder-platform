@@ -4,7 +4,7 @@ import { useMyCourses } from '@/hooks';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LoadingCard, EmptyState } from '@/components/shared';
-import { Plus, BookOpen, FileText, Users, Clock } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProfessorAssignmentsPage() {

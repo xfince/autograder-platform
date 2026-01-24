@@ -12,7 +12,6 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Multer } from 'multer';
 import { TestSuitesService } from './test-suites.service';
 import {
   CreateTestSuiteDto,

@@ -213,7 +213,7 @@ export class CoursesService {
               courseId,
             },
           });
-        } catch (error) {
+        } catch {
           // Skip if already enrolled
           return null;
         }

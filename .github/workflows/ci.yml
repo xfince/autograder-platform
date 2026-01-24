@@ -1,0 +1,362 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+jobs:
+  # ============================================
+  # JOB 1: Install Dependencies & Cache
+  # ============================================
+  install:
+    name: 📦 Install Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            apps/*/node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+  # ============================================
+  # JOB 2: Lint Check
+  # ============================================
+  lint:
+    name: 🔍 Lint
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            apps/*/node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+  # ============================================
+  # JOB 3: Type Check
+  # ============================================
+  type-check:
+    name: 🔷 Type Check
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            apps/*/node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        working-directory: packages/database
+
+      - name: Run TypeScript type check
+        run: npm run type-check
+
+  # ============================================
+  # JOB 4: Unit Tests
+  # ============================================
+  test-unit:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            apps/*/node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        working-directory: packages/database
+
+      - name: Run unit tests with coverage
+        run: npm run test -- --coverage
+        working-directory: apps/api
+
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-unit
+          path: apps/api/coverage/
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./apps/api/coverage/lcov.info
+          flags: unit-tests
+          name: api-unit-coverage
+          fail_ci_if_error: false
+          verbose: true
+
+      - name: Coverage Summary
+        run: |
+          echo "## 📊 Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f apps/api/coverage/coverage-summary.json ]; then
+            LINES=$(cat apps/api/coverage/coverage-summary.json | jq '.total.lines.pct')
+            STATEMENTS=$(cat apps/api/coverage/coverage-summary.json | jq '.total.statements.pct')
+            FUNCTIONS=$(cat apps/api/coverage/coverage-summary.json | jq '.total.functions.pct')
+            BRANCHES=$(cat apps/api/coverage/coverage-summary.json | jq '.total.branches.pct')
+            echo "| Metric | Coverage |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|----------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Lines | ${LINES}% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Statements | ${STATEMENTS}% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Functions | ${FUNCTIONS}% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Branches | ${BRANCHES}% |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Coverage summary not found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # ============================================
+  # JOB 5: Build Check
+  # ============================================
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+    needs: [lint, type-check, test-unit]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            apps/*/node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        working-directory: packages/database
+
+      - name: Build all packages
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            apps/api/dist
+            apps/web/.next
+            apps/workers/dist
+          retention-days: 7
+
+  # ============================================
+  # JOB 6: E2E Tests
+  # ============================================
+  test-e2e:
+    name: 🔬 E2E Tests
+    runs-on: ubuntu-latest
+    needs: [build]
+    
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: autograder
+          POSTGRES_PASSWORD: autograder123
+          POSTGRES_DB: autograder_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            apps/*/node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        working-directory: packages/database
+
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+        working-directory: packages/database
+        env:
+          DATABASE_URL: postgresql://autograder:autograder123@localhost:5432/autograder_test
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        working-directory: apps/api
+        env:
+          DATABASE_URL: postgresql://autograder:autograder123@localhost:5432/autograder_test
+          JWT_SECRET: e2e-test-jwt-secret-key-256-bits-minimum-length
+          JWT_EXPIRES_IN: 1h
+          JWT_REFRESH_SECRET: e2e-test-refresh-secret-key-256-bits
+          JWT_REFRESH_EXPIRES_IN: 7d
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          NODE_ENV: test
+
+  # ============================================
+  # JOB 7: Security Audit
+  # ============================================
+  security:
+    name: 🔒 Security Audit
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+  # ============================================
+  # Final Status Check
+  # ============================================
+  ci-success:
+    name: ✅ CI Success
+    runs-on: ubuntu-latest
+    needs: [lint, type-check, test-unit, build, test-e2e]
+    if: always()
+    steps:
+      - name: Check all jobs passed
+        run: |
+          if [[ "${{ needs.lint.result }}" != "success" ]] || \
+             [[ "${{ needs.type-check.result }}" != "success" ]] || \
+             [[ "${{ needs.test-unit.result }}" != "success" ]] || \
+             [[ "${{ needs.build.result }}" != "success" ]] || \
+             [[ "${{ needs.test-e2e.result }}" != "success" ]]; then
+            echo "❌ One or more CI jobs failed"
+            exit 1
+          fi
+          echo "✅ All CI checks passed!"

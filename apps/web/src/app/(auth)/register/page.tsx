@@ -54,7 +54,7 @@ export default function RegisterPage() {
       return;
     }
 
-    const { confirmPassword, ...registerData } = result.data;
+    const { confirmPassword: _confirmPassword, ...registerData } = result.data;
     registerMutation.mutate(registerData);
   };
 

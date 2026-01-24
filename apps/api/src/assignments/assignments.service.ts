@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { CreateAssignmentDto, UpdateAssignmentDto, AssignmentResponseDto } from './dto';
-import { UserRole } from '@autograder/database';
 
 @Injectable()
 export class AssignmentsService {

@@ -6,7 +6,7 @@ import { useCourse } from '@/hooks';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LoadingPage, ErrorPage, EmptyState } from '@/components/shared';
-import { ArrowLeft, BookOpen, Users, FileText, Calendar } from 'lucide-react';
+import { ArrowLeft, Users, FileText } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function StudentCourseDetailPage({ params }: { params: Promise<{ id: string }> }) {

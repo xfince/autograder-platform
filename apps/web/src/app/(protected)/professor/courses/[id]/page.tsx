@@ -4,7 +4,7 @@ import { use } from 'react';
 import Link from 'next/link';
 import { useCourse } from '@/hooks';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoadingPage, ErrorPage, EmptyState } from '@/components/shared';
 import { ArrowLeft, Edit, Users, FileText, Plus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';

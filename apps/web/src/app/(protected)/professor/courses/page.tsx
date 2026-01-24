@@ -6,7 +6,7 @@ import { useMyCourses, useDeleteCourse } from '@/hooks';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoadingCard, ErrorCard, EmptyState } from '@/components/shared';
-import { Plus, BookOpen, Users, FileText, Trash2, Edit, ExternalLink } from 'lucide-react';
+import { Plus, Users, FileText, Trash2, Edit, ExternalLink } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,

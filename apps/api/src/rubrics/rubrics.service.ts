@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
 import {
-  CreateRubricDto,
   CreateRubricWithCriteriaDto,
   UpdateRubricDto,
   RubricResponseDto,
@@ -77,7 +76,7 @@ export class RubricsService {
     let parsedJson: any;
     try {
       parsedJson = JSON.parse(jsonContent);
-    } catch (error) {
+    } catch {
       throw new BadRequestException('Invalid JSON format');
     }
 

@@ -1,0 +1,272 @@
+# Docker Build & Push Workflow
+# Builds Docker images for all services and pushes to GitHub Container Registry
+# Triggered on push to main/develop and on pull requests
+
+name: Docker Build
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - 'docker-compose.yml'
+      - '**/Dockerfile'
+      - '.github/workflows/docker.yml'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - 'docker-compose.yml'
+      - '**/Dockerfile'
+      - '.github/workflows/docker.yml'
+  workflow_dispatch:
+    inputs:
+      push_images:
+        description: 'Push images to registry'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository_owner }}/autograder
+
+jobs:
+  # ============================================
+  # Build API Image
+  # ============================================
+  build-api:
+    name: Build API Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for API
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-api
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix=
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/api/Dockerfile
+          push: ${{ github.event_name != 'pull_request' || github.event.inputs.push_images == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=production
+
+  # ============================================
+  # Build Web Image
+  # ============================================
+  build-web:
+    name: Build Web Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Web
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-web
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix=
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+
+      - name: Build and push Web image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/web/Dockerfile
+          push: ${{ github.event_name != 'pull_request' || github.event.inputs.push_images == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=production
+
+  # ============================================
+  # Build Workers Image
+  # ============================================
+  build-workers:
+    name: Build Workers Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Workers
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-workers
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix=
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+
+      - name: Build and push Workers image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/workers/Dockerfile
+          push: ${{ github.event_name != 'pull_request' || github.event.inputs.push_images == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=production
+
+  # ============================================
+  # Docker Compose Validation
+  # ============================================
+  validate-compose:
+    name: Validate Docker Compose
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate docker-compose.yml
+        run: docker compose config --quiet
+
+      - name: Check for security issues in Dockerfiles
+        run: |
+          echo "Checking Dockerfiles for common security issues..."
+          
+          # Check for root user usage (should use non-root)
+          for dockerfile in apps/*/Dockerfile docker/Dockerfile.*; do
+            if [ -f "$dockerfile" ]; then
+              echo "Checking $dockerfile..."
+              
+              # Verify non-root user is created
+              if grep -q "adduser\|useradd" "$dockerfile"; then
+                echo "✓ $dockerfile creates a non-root user"
+              else
+                echo "⚠ Warning: $dockerfile may not create a non-root user"
+              fi
+              
+              # Check for USER directive
+              if grep -q "^USER " "$dockerfile"; then
+                echo "✓ $dockerfile uses USER directive"
+              else
+                echo "⚠ Warning: $dockerfile may run as root"
+              fi
+            fi
+          done
+
+  # ============================================
+  # Integration Test with Docker Compose
+  # ============================================
+  docker-integration:
+    name: Docker Integration Test
+    runs-on: ubuntu-latest
+    needs: [build-api, build-web, build-workers, validate-compose]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create .env file for Docker Compose
+        run: |
+          cat > .env << EOF
+          DATABASE_URL=postgresql://autograder:autograder_dev_password@postgres:5432/autograder_dev?schema=public
+          REDIS_HOST=redis
+          REDIS_PORT=6379
+          REDIS_PASSWORD=autograder_redis_password
+          JWT_SECRET=test-jwt-secret-for-ci-pipeline-testing-256-bit
+          JWT_EXPIRES_IN=7d
+          JWT_REFRESH_SECRET=test-refresh-secret-for-ci-pipeline-testing
+          JWT_REFRESH_EXPIRES_IN=30d
+          NODE_ENV=production
+          EOF
+
+      - name: Build images with Docker Compose
+        run: docker compose build --parallel
+
+      - name: Start services
+        run: |
+          docker compose up -d postgres redis
+          sleep 10  # Wait for databases to be ready
+          
+      - name: Check database health
+        run: |
+          docker compose exec -T postgres pg_isready -U autograder -d autograder_dev
+          
+      - name: Check Redis health
+        run: |
+          docker compose exec -T redis redis-cli ping
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v

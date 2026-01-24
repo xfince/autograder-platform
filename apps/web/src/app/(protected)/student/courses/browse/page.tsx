@@ -24,7 +24,7 @@ export default function BrowseCoursesPage() {
   const handleEnroll = async (courseId: string) => {
     try {
       await enrollMutation.mutateAsync(courseId);
-    } catch (error) {
+    } catch (_error) {
       // Error handled by mutation
     }
   };

@@ -3,8 +3,7 @@
 import { useMyCourses } from '@/hooks';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoadingCard, EmptyState } from '@/components/shared';
-import { FileText, Clock, CheckCircle, AlertCircle } from 'lucide-react';
-import Link from 'next/link';
+import { Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function StudentAssignmentsPage() {
   const { data: courses, isLoading } = useMyCourses();

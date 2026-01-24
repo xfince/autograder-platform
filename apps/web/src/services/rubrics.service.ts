@@ -46,6 +46,7 @@ export interface CreateRubricDto {
   }>;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateRubricDto extends Partial<CreateRubricDto> {}
 
 export const rubricsService = {

@@ -12,7 +12,6 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Multer } from 'multer';
 import { RubricsService } from './rubrics.service';
 import { CreateRubricWithCriteriaDto, UpdateRubricDto, RubricResponseDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

@@ -1,5 +1,4 @@
 import Queue from 'bull';
-import { redisConnection } from './redis';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 

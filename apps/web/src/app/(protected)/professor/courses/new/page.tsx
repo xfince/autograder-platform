@@ -44,7 +44,7 @@ export default function NewCoursePage() {
     try {
       const course = await createMutation.mutateAsync(formData);
       router.push(`/professor/courses/${course.id}`);
-    } catch (error) {
+    } catch (_error) {
       // Error handled by mutation
     }
   };
