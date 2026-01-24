@@ -4,6 +4,7 @@ import { User } from '@/stores/auth-store';
 export interface LoginCredentials {
   email: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 export interface RegisterData {
@@ -17,6 +18,13 @@ export interface RegisterData {
 export interface AuthResponse {
   user: User;
   accessToken: string;
+  refreshToken: string;
+  expiresIn: number; // seconds until access token expires
+}
+
+export interface RefreshResponse {
+  accessToken: string;
+  expiresIn: number;
 }
 
 export const authService = {
@@ -27,6 +35,13 @@ export const authService = {
 
   async register(data: RegisterData): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>('/auth/register', data);
+    return response.data;
+  },
+
+  async refreshToken(refreshToken: string): Promise<RefreshResponse> {
+    const response = await apiClient.post<RefreshResponse>('/auth/refresh-token', {
+      refreshToken,
+    });
     return response.data;
   },
 

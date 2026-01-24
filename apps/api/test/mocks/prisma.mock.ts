@@ -82,6 +82,14 @@ export const createMockPrismaService = (): any => ({
     update: jest.fn(),
     delete: jest.fn(),
   },
+  passwordResetToken: {
+    findUnique: jest.fn(),
+    findMany: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    updateMany: jest.fn(),
+    delete: jest.fn(),
+  },
   $connect: jest.fn(),
   $disconnect: jest.fn(),
   $transaction: jest.fn((callback: any) => callback(createMockPrismaService())),
@@ -92,4 +100,3 @@ export const createMockPrismaService = (): any => ({
 
 // Type alias for better IDE support in tests
 export type MockPrismaService = ReturnType<typeof createMockPrismaService>;
-

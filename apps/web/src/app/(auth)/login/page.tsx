@@ -7,6 +7,7 @@ import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Card,
   CardContent,
@@ -22,6 +23,7 @@ export default function LoginPage() {
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
+    rememberMe: false,
   });
   const [errors, setErrors] = useState<Partial<Record<keyof LoginFormData, string>>>({});
 
@@ -98,6 +100,25 @@ export default function LoginPage() {
                 className={errors.password ? 'border-red-500' : ''}
               />
               {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="rememberMe"
+                  checked={formData.rememberMe}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, rememberMe: checked === true }))
+                  }
+                  disabled={loginMutation.isPending}
+                />
+                <Label htmlFor="rememberMe" className="text-sm font-normal cursor-pointer">
+                  Remember me for 7 days
+                </Label>
+              </div>
+              <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+                Forgot password?
+              </Link>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">

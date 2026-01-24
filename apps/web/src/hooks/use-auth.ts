@@ -10,7 +10,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: (credentials: LoginCredentials) => authService.login(credentials),
     onSuccess: (data) => {
-      setAuth(data.user, data.accessToken);
+      setAuth(data.user, data.accessToken, data.refreshToken, data.expiresIn);
 
       // Redirect based on role
       if (data.user.role === 'PROFESSOR') {
@@ -31,7 +31,7 @@ export function useRegister() {
   return useMutation({
     mutationFn: (data: RegisterData) => authService.register(data),
     onSuccess: (data) => {
-      setAuth(data.user, data.accessToken);
+      setAuth(data.user, data.accessToken, data.refreshToken, data.expiresIn);
 
       // Redirect based on role
       if (data.user.role === 'PROFESSOR') {
@@ -66,4 +66,23 @@ export function useLogout() {
     queryClient.clear();
     router.push('/login');
   };
+}
+
+export function useRefreshToken() {
+  const { refreshToken, setAccessToken, logout } = useAuthStore();
+
+  return useMutation({
+    mutationFn: () => {
+      if (!refreshToken) {
+        throw new Error('No refresh token available');
+      }
+      return authService.refreshToken(refreshToken);
+    },
+    onSuccess: (data) => {
+      setAccessToken(data.accessToken, data.expiresIn);
+    },
+    onError: () => {
+      logout();
+    },
+  });
 }

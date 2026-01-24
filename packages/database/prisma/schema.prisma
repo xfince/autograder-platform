@@ -60,9 +60,25 @@ model User {
   coursesTeaching Course[] @relation("ProfessorCourses")
   enrollments     Enrollment[]
   submissions     Submission[]
+  passwordResetTokens PasswordResetToken[]
   
   @@index([email])
   @@index([role])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([token])
+  @@index([userId])
 }
 
 // ============================================
