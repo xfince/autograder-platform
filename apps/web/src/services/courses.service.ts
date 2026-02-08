@@ -18,6 +18,11 @@ export interface Course {
   };
   assignmentCount?: number;
   studentCount?: number;
+  rubrics?: Array<{
+    id: string;
+    name: string;
+    totalPoints: number;
+  }>;
 }
 
 export interface EnrolledStudent {

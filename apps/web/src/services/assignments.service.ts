@@ -4,9 +4,9 @@ export interface Assignment {
   id: string;
   title: string;
   description?: string;
-  instructions?: string;
   dueDate: string;
-  maxAttempts: number;
+  maxSubmissions: number;
+  allowLateSubmissions: boolean;
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;
@@ -20,17 +20,16 @@ export interface Assignment {
     name: string;
     totalPoints: number;
   };
-  testSuiteCount?: number;
   submissionCount?: number;
 }
 
 export interface CreateAssignmentDto {
   title: string;
   description?: string;
-  instructions?: string;
   courseId: string;
   dueDate: string;
-  maxAttempts?: number;
+  maxSubmissions?: number;
+  allowLateSubmissions?: boolean;
   rubricId?: string;
 }
 

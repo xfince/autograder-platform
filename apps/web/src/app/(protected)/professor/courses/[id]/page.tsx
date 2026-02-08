@@ -2,18 +2,39 @@
 
 import { use } from 'react';
 import Link from 'next/link';
-import { useCourse } from '@/hooks';
+import {
+  useCourse,
+  useAssignmentsByCourse,
+  usePublishAssignment,
+  useDeleteAssignment,
+} from '@/hooks';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoadingPage, ErrorPage, EmptyState } from '@/components/shared';
 import { ArrowLeft, Edit, Users, FileText, Plus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { EnrollmentManager } from '@/components/professor/enrollment-manager';
-import { EnrollmentRequestsManager } from '@/components/professor/enrollment-requests-manager';
+import {
+  EnrollmentManager,
+  EnrollmentRequestsManager,
+  ProfessorAssignmentCard,
+} from '@/components/professor';
 
 export default function CourseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data: course, isLoading, error, refetch } = useCourse(id);
+  const { data: assignments, isLoading: assignmentsLoading } = useAssignmentsByCourse(id);
+  const { mutate: publishAssignment } = usePublishAssignment();
+  const { mutate: deleteAssignment } = useDeleteAssignment();
+
+  const handlePublishToggle = (assignmentId: string) => {
+    publishAssignment(assignmentId);
+  };
+
+  const handleDelete = (assignmentId: string) => {
+    if (window.confirm('Are you sure you want to delete this assignment?')) {
+      deleteAssignment(assignmentId);
+    }
+  };
 
   if (isLoading) return <LoadingPage text="Loading course..." />;
   if (error) return <ErrorPage message="Failed to load course" onRetry={refetch} />;
@@ -123,16 +144,33 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
                 </div>
               </CardHeader>
               <CardContent>
-                <EmptyState
-                  icon="file"
-                  title="No assignments yet"
-                  description="Create your first assignment for this course."
-                  action={{
-                    label: 'Create Assignment',
-                    onClick: () =>
-                      (window.location.href = `/professor/assignments/new?courseId=${id}`),
-                  }}
-                />
+                {assignmentsLoading ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-600">Loading assignments...</p>
+                  </div>
+                ) : !assignments || assignments.length === 0 ? (
+                  <EmptyState
+                    icon="file"
+                    title="No assignments yet"
+                    description="Create your first assignment for this course."
+                    action={{
+                      label: 'Create Assignment',
+                      onClick: () =>
+                        (window.location.href = `/professor/assignments/new?courseId=${id}`),
+                    }}
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    {assignments.map((assignment) => (
+                      <ProfessorAssignmentCard
+                        key={assignment.id}
+                        assignment={assignment}
+                        onPublishToggle={handlePublishToggle}
+                        onDelete={handleDelete}
+                      />
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

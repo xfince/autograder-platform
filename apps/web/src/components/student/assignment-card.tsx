@@ -51,7 +51,9 @@ export function AssignmentCard({ assignment, courseId }: AssignmentCardProps) {
         <div className="flex items-center justify-between pt-2">
           <div className="flex items-center gap-4 text-sm text-gray-600">
             {assignment.rubric && <span>Points: {assignment.rubric.totalPoints}</span>}
-            {assignment.maxAttempts > 0 && <span>Max Attempts: {assignment.maxAttempts}</span>}
+            {assignment.maxSubmissions > 0 && (
+              <span>Max Attempts: {assignment.maxSubmissions}</span>
+            )}
           </div>
 
           {isPublished && (
