@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LogOut, Settings, BookOpen, GraduationCap, Users } from 'lucide-react';
+import { LogOut, Settings, BookOpen, GraduationCap, Users, FileJson } from 'lucide-react';
 
 export function Navbar() {
   const { user, isAuthenticated } = useAuthStore();
@@ -65,6 +65,12 @@ export function Navbar() {
                   >
                     Assignments
                   </Link>
+                  <Link
+                    href="/professor/rubrics"
+                    className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                  >
+                    Rubrics
+                  </Link>
                 </>
               )}
 
@@ -111,6 +117,12 @@ export function Navbar() {
                     className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
                   >
                     Assignments
+                  </Link>
+                  <Link
+                    href="/professor/rubrics"
+                    className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                  >
+                    Rubrics
                   </Link>
                 </>
               )}

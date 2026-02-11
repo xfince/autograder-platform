@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCreateAssignment, useMyCourses } from '@/hooks';
+import { useCreateAssignment, useMyCourses, useAvailableRubrics } from '@/hooks';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,6 +25,7 @@ export default function NewAssignmentPage() {
   const courseIdParam = searchParams.get('courseId');
 
   const { data: courses, isLoading: coursesLoading } = useMyCourses();
+  const { data: availableRubrics, isLoading: rubricsLoading } = useAvailableRubrics();
   const { mutate: createAssignment, isPending } = useCreateAssignment();
 
   const [formData, setFormData] = useState({
@@ -212,40 +213,36 @@ export default function NewAssignmentPage() {
                 <Select
                   value={formData.rubricId}
                   onValueChange={(value) => handleChange('rubricId', value)}
+                  disabled={rubricsLoading}
                 >
                   <SelectTrigger id="rubric" className={errors.rubricId ? 'border-red-500' : ''}>
                     <SelectValue placeholder="Select a rubric" />
                   </SelectTrigger>
                   <SelectContent>
-                    {selectedCourse?.rubrics?.map(
-                      (rubric: { id: string; name: string; totalPoints: number }) => (
-                        <SelectItem key={rubric.id} value={rubric.id}>
-                          {rubric.name} ({rubric.totalPoints} points)
-                        </SelectItem>
-                      ),
-                    )}
-                    {(!selectedCourse?.rubrics || selectedCourse.rubrics.length === 0) && (
+                    {availableRubrics?.map((rubric) => (
+                      <SelectItem key={rubric.id} value={rubric.id}>
+                        {rubric.name} ({rubric.totalPoints} points)
+                      </SelectItem>
+                    ))}
+                    {(!availableRubrics || availableRubrics.length === 0) && (
                       <div className="px-2 py-1.5 text-sm text-gray-500">
-                        {formData.courseId
-                          ? 'No rubrics available. Create one first.'
-                          : 'Select a course first'}
+                        No available rubrics. Create one first.
                       </div>
                     )}
                   </SelectContent>
                 </Select>
                 {errors.rubricId && <p className="text-sm text-red-500">{errors.rubricId}</p>}
-                {formData.courseId &&
-                  (!selectedCourse?.rubrics || selectedCourse.rubrics.length === 0) && (
-                    <p className="text-sm text-gray-500">
-                      <Link
-                        href={`/professor/courses/${formData.courseId}`}
-                        className="text-blue-600 hover:underline"
-                      >
-                        Create a rubric
-                      </Link>{' '}
-                      for this course first
-                    </p>
-                  )}
+                {(!availableRubrics || availableRubrics.length === 0) && !rubricsLoading && (
+                  <p className="text-sm text-gray-500">
+                    <Link
+                      href="/professor/rubrics/upload"
+                      className="text-blue-600 hover:underline"
+                    >
+                      Create a rubric
+                    </Link>{' '}
+                    first to assign it to this assignment
+                  </p>
+                )}
               </div>
 
               {/* Due Date */}

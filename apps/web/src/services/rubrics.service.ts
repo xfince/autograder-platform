@@ -2,15 +2,16 @@ import apiClient from '@/lib/api-client';
 
 export interface Criterion {
   id: string;
-  name: string;
-  description?: string;
+  title: string;
   maxPoints: number;
   weight: number;
-  evaluationMethod: 'MANUAL' | 'UNIT_TEST' | 'GPT_SEMANTIC' | 'HYBRID';
-  excellentDescription?: string;
-  goodDescription?: string;
-  fairDescription?: string;
-  poorDescription?: string;
+  evaluationMethod: string; // 'unit_test' | 'gpt_semantic' | 'hybrid'
+  unitTestWeight?: number;
+  gptWeight?: number;
+  gptInstructions?: string;
+  filesToAnalyze?: string[];
+  levels?: Record<string, unknown>;
+  order?: number;
 }
 
 export interface Rubric {
@@ -34,15 +35,16 @@ export interface CreateRubricDto {
   totalPoints: number;
   passingGrade: number;
   criteria: Array<{
-    name: string;
-    description?: string;
+    title: string;
     maxPoints: number;
     weight: number;
-    evaluationMethod: 'MANUAL' | 'UNIT_TEST' | 'GPT_SEMANTIC' | 'HYBRID';
-    excellentDescription?: string;
-    goodDescription?: string;
-    fairDescription?: string;
-    poorDescription?: string;
+    evaluationMethod: string;
+    unitTestWeight?: number;
+    gptWeight?: number;
+    gptInstructions?: string;
+    filesToAnalyze?: string[];
+    levels?: Record<string, unknown>;
+    order?: number;
   }>;
 }
 
